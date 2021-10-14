@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/recordFragment"
+        android:title="Record"
+        android:icon="@drawable/ic_mic_bottomnav"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/folderFragment"
+        android:title="Folder"
+        android:icon="@drawable/ic_folder_bottomnav"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/newFragment"
+        android:title="New file"
+        android:icon="@drawable/ic_addnew_bottomnav"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/profileFragment"
+        android:title="Profile"
+        android:icon="@drawable/ic_profile_bottomnav"
+        android:enabled="true"/>
+</menu>

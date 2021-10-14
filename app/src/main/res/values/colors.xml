@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="bg_main_console">#FF192133</color>
+    <color name="stroke_button_record">#FF212841</color>
+    <color name="button_delete">#FF6B3F48</color>
+    <color name="pause_button">#FF0F1420</color>
+    <color name="sub_console_record">#FF172032</color>
 </resources>
