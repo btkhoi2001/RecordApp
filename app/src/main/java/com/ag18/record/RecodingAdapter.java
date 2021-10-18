@@ -1,12 +1,18 @@
 package com.ag18.record;
 
+import android.animation.ValueAnimator;
+import android.renderscript.Sampler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -46,9 +52,9 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvTitle = itemView.findViewById(R.id.tv_title);
-            tvCreatedAt = itemView.findViewById(R.id.tv_createdat);
-            tvDuration = itemView.findViewById(R.id.tv_duration);
+            tvTitle = (TextView)itemView.findViewById(R.id.tv_title);
+            tvCreatedAt = (TextView)itemView.findViewById(R.id.tv_createdat);
+            tvDuration = (TextView)itemView.findViewById(R.id.tv_duration);
         }
 
         public void setData(String title, String createdAt, String duration) {

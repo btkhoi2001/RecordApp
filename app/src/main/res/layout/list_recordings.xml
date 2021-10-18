@@ -71,30 +71,35 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:orientation="horizontal">
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:backgroundTint="@color/bg_main_console"
                 android:src="@drawable/ic_baseline_share_24"/>
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                 android:backgroundTint="@color/bg_main_console"
                 android:src="@drawable/ic_baseline_replay_5_24"/>
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:backgroundTint="@color/bg_main_console"
                 android:src="@drawable/ic_baseline_play_arrow_24"/>
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:backgroundTint="@color/bg_main_console"
                 android:src="@drawable/ic_baseline_forward_5_24"/>
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:backgroundTint="@color/bg_main_console"
                 android:src="@drawable/ic_baseline_more_horiz_24"/>
 
         </LinearLayout>
