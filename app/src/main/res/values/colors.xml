@@ -14,4 +14,8 @@
     <color name="button_delete">#FF6B3F48</color>
     <color name="pause_button">#FF0F1420</color>
     <color name="sub_console_record">#FF172032</color>
+
+    <color name="dark_theme_title">#FFFFFFFF</color>
+    <color name="dark_theme_desc">#FFD5CCCC</color>
+    <color name="dark_theme_icon_playback">#FFFFFFFF</color>
 </resources>

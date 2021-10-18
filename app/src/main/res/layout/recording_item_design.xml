@@ -14,15 +14,15 @@
             android:layout_height="wrap_content"
             android:maxWidth="240dp"
             android:textSize="20dp"
-            android:textColor="#616161"
-            android:text="Interview-Khoi"/>
+            android:textColor="@color/dark_theme_title"
+            android:text="Interview"/>
         <TextView
             android:id="@+id/tv_duration"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="20dp"
-            android:textColor="#616161"
+            android:textColor="@color/dark_theme_desc"
             android:gravity="right"
             android:text="08:21"/>
     </LinearLayout>
@@ -32,6 +32,6 @@
         android:id="@+id/tv_createdat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#838383"
+        android:textColor="@color/dark_theme_desc"
         android:text="14 Dec 2021"/>
 </LinearLayout>

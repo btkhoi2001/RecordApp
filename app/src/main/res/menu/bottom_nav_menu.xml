@@ -12,13 +12,8 @@
         android:icon="@drawable/ic_folder_bottomnav"
         android:enabled="true"/>
     <item
-        android:id="@+id/newFragment"
-        android:title="New file"
-        android:icon="@drawable/ic_addnew_bottomnav"
-        android:enabled="true"/>
-    <item
-        android:id="@+id/profileFragment"
-        android:title="Profile"
-        android:icon="@drawable/ic_profile_bottomnav"
+        android:id="@+id/settingsFragment"
+        android:title="Settings"
+        android:icon="@drawable/ic_settings_bottomnav"
         android:enabled="true"/>
 </menu>
