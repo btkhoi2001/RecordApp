@@ -12,6 +12,9 @@
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/fragment_record.xml" value="0.19429347826086957" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/fragment_recording.xml" value="0.2" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Android/Project/app/src/main/res/layout/fragment_file.xml" value="0.20416666666666666" />
+        <entry key="..\:/Android/Project/app/src/main/res/layout/list_recordings.xml" value="0.14945652173913043" />
+        <entry key="..\:/Android/Project/app/src/main/res/xml/root_preferences.xml" value="0.20416666666666666" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/bg_button_pause.xml" value="0.25925925925925924" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/bg_button_record.xml" value="0.22870370370370371" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/bg_button_save.xml" value="0.22870370370370371" />
