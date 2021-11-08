@@ -35,21 +35,21 @@
             android:id="@+id/btn_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
+            android:background="@drawable/bg_button_save"
             android:paddingLeft="50dp"
+            android:paddingTop="15dp"
             android:paddingRight="50dp"
+            android:paddingBottom="15dp"
+            android:gravity="center"
             android:text="Save"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:background="@drawable/bg_button_save"/>
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="15dp"
+            android:layout_marginRight="22dp"
             android:layout_marginLeft="20dp"
             android:layout_marginBottom="50dp"
             android:background="@color/sub_console_record"
