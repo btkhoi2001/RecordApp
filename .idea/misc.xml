@@ -12,14 +12,30 @@
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/fragment_record.xml" value="0.19429347826086957" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/fragment_recording.xml" value="0.2" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_addnew_bottomnav.xml" value="0.14635416666666667" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_forward_5_24.xml" value="0.2703125" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_more_horiz_24.xml" value="0.2703125" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_replay_5_24.xml" value="0.2703125" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.2703125" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_forward.xml" value="0.2526041666666667" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/list_bg.xml" value="0.1" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/list_item.xml" value="0.1" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/progress_bar.xml" value="0.1609375" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/recording_item_design.xml" value="0.2703125" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/toggle_button.xml" value="0.1609375" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_file.xml" value="0.13020833333333334" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_new.xml" value="0.13020833333333334" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_player.xml" value="0.18115942028985507" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_profile.xml" value="0.13020833333333334" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_record.xml" value="0.13020833333333334" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/item_cover.xml" value="0.17481884057971014" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/list_item.xml" value="0.14479166666666668" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/list_recordings.xml" value="0.4" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/recording_item_design.xml" value="0.4" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/recording_list.xml" value="0.23645833333333333" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/recording_play_tool.xml" value="0.2" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/strings.xml" value="0.13020833333333334" />
       </map>
     </option>
   </component>
