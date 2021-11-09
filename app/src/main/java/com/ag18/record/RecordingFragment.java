@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -94,13 +95,13 @@ public class RecordingFragment extends Fragment {
             public void onClick(View view) {
                 if(isRecording) {
                     stopRecording();
-                    btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
+                    btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
                     isRecording = false;
                 }
                 else {
                     if(checkPermission()) {
                         starRecording();
-                        btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+                        btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
                         isRecording = true;
                     }
                 }
@@ -109,6 +110,7 @@ public class RecordingFragment extends Fragment {
     }
 
     private void stopRecording() {
+        Toast.makeText(getActivity(), "Stop recording", Toast.LENGTH_LONG).show();
         mediaRecorder.stop();
         mediaRecorder.release();
 
@@ -132,6 +134,7 @@ public class RecordingFragment extends Fragment {
         }
 
         mediaRecorder.start();
+        Toast.makeText(getActivity(), "Recording Started", Toast.LENGTH_LONG).show();
     }
 
     public boolean checkPermission() {

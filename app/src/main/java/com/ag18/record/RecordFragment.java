@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link RecordFragment#newInstance} factory method to
@@ -81,7 +83,9 @@ public class RecordFragment extends Fragment {
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navController.navigate(R.id.action_voiceEditorFragment_to_recordingFragment);
+                navController.navigate(R.id.action_recordFragment_to_recordingFragment);
+                BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+                bottomNavigationView.setVisibility(View.GONE);
             }
         });
     }
