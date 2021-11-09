@@ -5,7 +5,7 @@ import java.io.*;
 
 class SimpleSoundPlayer
 {
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
         SimpleSoundPlayer sound = new SimpleSoundPlayer("src/Recording.wav");
 
         InputStream stream = new ByteArrayInputStream(sound.getSamples());
@@ -14,13 +14,16 @@ class SimpleSoundPlayer
 
         stream = new FilteredSoundStream(stream, filter);
 
-        sound.play(stream, 1f);
+        sound.play(stream, 1.3f);
+
+        sound.write(stream, 1.3f, "src/Out.wav");
 
         System.exit(0);
     }
 
     private AudioFormat format;
     private byte[] samples;
+    private ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     public SimpleSoundPlayer(String fileName)
     {
@@ -91,6 +94,7 @@ class SimpleSoundPlayer
                 if(numBytesRead != -1)
                 {
                     line.write(buffer, 0, numBytesRead);
+                    out.write(buffer, 0, numBytesRead);
                 }
             }
 
@@ -102,6 +106,38 @@ class SimpleSoundPlayer
 
         line.drain();
         line.close();
+    }
+
+    public void write(InputStream source, float pitch, String fileName) throws UnsupportedAudioFileException, IOException {
+        File outFile = new File(fileName);
+
+        int bufferSize = format.getFrameSize() * Math.round(format.getSampleRate()/10);
+        byte[] buffer = new byte[bufferSize];
+
+        try
+        {
+            int numBytesRead = 0;
+            while(numBytesRead != -1)
+            {
+                numBytesRead = source.read(buffer, 0, buffer.length);
+                if (numBytesRead != -1)
+                {
+                    out.write(buffer, 0, numBytesRead);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        byte[] audioBytes = out.toByteArray();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(audioBytes);
+        AudioFormat newFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, format.getSampleRate()*pitch, 16, format.getChannels(), format.getChannels() * 2, format.getSampleRate(), false);
+        AudioInputStream ais = new AudioInputStream(in, newFormat, audioBytes.length / format.getFrameSize());
+
+        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, outFile);
     }
 }
 
@@ -229,4 +265,3 @@ class EchoFilter extends SoundFilter
         }
     }
 }
-
