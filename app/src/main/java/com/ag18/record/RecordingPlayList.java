@@ -1,11 +1,13 @@
 package com.ag18.record;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -57,15 +59,14 @@ public class RecordingPlayList extends AppCompatActivity {
                     }
                 }).check();
     }
-    public ArrayList<File> findSong(File file){
+    public ArrayList<File> findRecording(File file){
         ArrayList<File> arrayList = new ArrayList<>();
 
         File[] files = file.listFiles();
 
         for(File singleFile : files){
-            System.out.println(singleFile);
             if(singleFile.isDirectory() && !singleFile.isHidden()){
-                arrayList.addAll(findSong(singleFile));
+                arrayList.addAll(findRecording(singleFile));
             }
             else{
                 if(singleFile.getName().endsWith(".mp3") || singleFile.getName().endsWith(".wav") ){
@@ -79,17 +80,28 @@ public class RecordingPlayList extends AppCompatActivity {
     void displaySongs(){
         String dir = "/storage/emulated/0/Download";
 
-        final ArrayList<File> mySongs = findSong(new File(dir));
+        final ArrayList<File> myRecordings = findRecording(new File(dir));
 
-        items = new String[mySongs.size()];
-        for(int i = 0; i<mySongs.size(); ++i){
-            items[i] = mySongs.get(i).getName().toString().replace(".mp3", "").replace(".wav", "");
+        items = new String[myRecordings.size()];
+        for(int i = 0; i<myRecordings.size(); ++i){
+            items[i] = myRecordings.get(i).getName().toString().replace(".mp3", "").replace(".wav", "");
         }
 
 //        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
 //        listView.setAdapter(myAdapter);
         customAdatpter customAdatpter = new customAdatpter();
         listView.setAdapter(customAdatpter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String recordingName = (String) listView.getItemAtPosition(i);
+                startActivity(new Intent(getApplicationContext(), PlayerActivity.class)
+                        .putExtra("recordings", myRecordings)
+                        .putExtra("recordingName", recordingName)
+                        .putExtra("pos", i)
+                );
+            }
+        });
     }
 
     class customAdatpter extends BaseAdapter
