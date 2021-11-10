@@ -5,6 +5,7 @@
     android:layout_marginEnd="8dp"
     android:layout_marginTop="8dp"
     android:layout_marginStart="8dp"
+    android:background="@drawable/album3"
     >
 <RelativeLayout
     android:padding="8dp"
@@ -22,20 +23,22 @@
         android:src="@drawable/ic_record"
         >
     </ImageView>
+
     <TextView
         android:id="@+id/txtRecordName"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_toEndOf="@+id/imgRecording"
-        android:padding="6dp"
-        android:textColor="#FFF"
-        android:background="#000"
-        android:textSize="15dp"
-        android:singleLine="true"
+        android:background="@color/colorPink"
         android:marqueeRepeatLimit="marquee_forever"
+        android:padding="6dp"
         android:scrollHorizontally="true"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"/>
+        android:singleLine="true"
+        android:textColor="#FFF"
+        android:textSize="15dp" />
 </RelativeLayout>
 </androidx.cardview.widget.CardView>

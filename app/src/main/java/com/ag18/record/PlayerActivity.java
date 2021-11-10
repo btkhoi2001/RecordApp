@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -58,10 +59,6 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-
-//        Objects.requireNonNull(getSupportActionBar()).setTitle("Now Playing");
-//        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-//        Objects.requireNonNull(getSupportActionBar()).setDisplayShowHomeEnabled(true);
 
         btnPlay = findViewById(R.id.btnPlay);
         btnNext = findViewById(R.id.btnNext);
@@ -149,15 +146,20 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }, delay);
 
+        int audioSessionId = mediaPlayer.getAudioSessionId();
+        if(audioSessionId != -1){
+            visualizer.setAudioSessionId(audioSessionId);
+        }
+
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!mediaPlayer.isPlaying()){
-                    btnPlay.setBackgroundResource(R.drawable.ic_baseline_pause_circle_filled_24);
+                if(mediaPlayer.isPlaying()){
+                    btnPlay.setBackgroundResource(R.drawable.ic_play);
                     mediaPlayer.pause();
                 }
                 else{
-                    btnPlay.setBackgroundResource(R.drawable.ic_play);
+                    btnPlay.setBackgroundResource(R.drawable.ic_pause_circle);
                     mediaPlayer.start();
                 }
             }
@@ -174,6 +176,7 @@ public class PlayerActivity extends AppCompatActivity {
                 recordingName = myRecordings.get(position).getName();
                 txtRecordingName.setText(recordingName);
                 mediaPlayer.start();
+                seekBar.setProgress(0);
                 btnPlay.setBackgroundResource(R.drawable.ic_pause);
                 startAnimation(imageView);
                 int audioSessionId = mediaPlayer.getAudioSessionId();
@@ -193,6 +196,7 @@ public class PlayerActivity extends AppCompatActivity {
                 recordingName = myRecordings.get(position).getName();
                 txtRecordingName.setText(recordingName);
                 mediaPlayer.start();
+                seekBar.setProgress(0);
                 btnPlay.setBackgroundResource(R.drawable.ic_pause);
                 startAnimation(imageView);
                 int audioSessionId = mediaPlayer.getAudioSessionId();
@@ -209,16 +213,15 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
 
-        int audioSessionId = mediaPlayer.getAudioSessionId();
-        if(audioSessionId != -1){
-            visualizer.setAudioSessionId(audioSessionId);
-        }
+
 
         btnForwardRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mediaPlayer.isPlaying()){
-                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition()+5000);
+                    final int newTime = mediaPlayer.getCurrentPosition()+5000;
+                    seekBar.setProgress(newTime);
+                    mediaPlayer.seekTo(newTime);
                 }
             }
         });
@@ -226,10 +229,17 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(mediaPlayer.isPlaying()){
-                    mediaPlayer.seekTo((mediaPlayer.getCurrentPosition()-5000 < 0) ? 0 : mediaPlayer.getCurrentPosition()-5000 );
+                    final int newTime = (mediaPlayer.getCurrentPosition()-5000 < 0) ? 0 : mediaPlayer.getCurrentPosition()-5000 ;
+                    seekBar.setProgress(newTime);
+                    mediaPlayer.seekTo(newTime);
                 }
             }
         });
+        buttonEffect(btnPlay);
+        buttonEffect(btnForwardLeft);
+        buttonEffect(btnForwardRight);
+        buttonEffect(btnNext);
+        buttonEffect(btnPrevious);
     }
 
     public  void startAnimation(View view){
@@ -249,5 +259,25 @@ public class PlayerActivity extends AppCompatActivity {
         }
         time += sec;
         return time;
+    }
+    public static void buttonEffect(View button){
+        button.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521,PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
     }
 }
