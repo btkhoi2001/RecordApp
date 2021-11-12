@@ -44,8 +44,12 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         ibEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("filePath", "/sdcard/RecordApp/test.wav");
+                // Ai làm phần bottom sheet fragment thì nhớ thay test.wav bằng đường dẫn file khi chọn trong list view
+
                 NavController navController = Navigation.findNavController(rootView);
-                navController.navigate(R.id.action_folderFragment_to_voiceEditorFragment);
+                navController.navigate(R.id.action_folderFragment_to_voiceEditorFragment, bundle);
                 dismiss();
             }
         });

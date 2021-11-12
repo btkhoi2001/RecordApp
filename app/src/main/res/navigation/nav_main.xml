@@ -32,6 +32,9 @@
         android:name="com.ag18.record.VoiceEditorFragment"
         android:label="fragment_voice_editor"
         tools:layout="@layout/fragment_voice_editor" >
+        <argument
+            android:name="filePath"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/recordingFragment"
