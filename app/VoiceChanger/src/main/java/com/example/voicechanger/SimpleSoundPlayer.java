@@ -10,15 +10,26 @@ class SimpleSoundPlayer
 
         SimpleSoundPlayer sound = new SimpleSoundPlayer("src/Recording.wav");
 
-        InputStream originalStream = new ByteArrayInputStream(sound.getSamples());
+        byte[] originalData = sound.getSamples();
+        System.out.println(originalData);
+
+        InputStream originalStream = new ByteArrayInputStream(originalData);
 
         EchoFilter filter = new EchoFilter(11025, 0.6f);
 
         InputStream filteredStream = new FilteredSoundStream(originalStream, filter);
 
-        //sound.play(filteredStream, pitch);
+        byte[] filteredData = sound.getSamples(filteredStream);
+        System.out.println(filteredData);
 
-        sound.write(originalStream, pitch, "src/Out.wav");
+        System.out.println("Playing original...");
+        sound.play(new ByteArrayInputStream(originalData), pitch);
+
+        System.out.println("Playing filtered...");
+        sound.play(new ByteArrayInputStream(filteredData), pitch);
+
+        sound.write(new ByteArrayInputStream(originalData), pitch, "src/Original.wav");
+        sound.write(new ByteArrayInputStream(filteredData), pitch, "src/Filtered.wav");
 
         System.exit(0);
     }
@@ -63,6 +74,33 @@ class SimpleSoundPlayer
         }
 
         return samples;
+    }
+
+    private byte[] getSamples(InputStream stream)
+    {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        int bufferSize = format.getFrameSize() * Math.round(format.getSampleRate()/10);
+        byte[] buffer = new byte[bufferSize];
+
+        try
+        {
+            int numBytesRead = 0;
+            while(numBytesRead != -1)
+            {
+                numBytesRead = stream.read(buffer, 0, buffer.length);
+                if (numBytesRead != -1)
+                {
+                    out.write(buffer, 0, numBytesRead);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return out.toByteArray();
     }
 
     public void play(InputStream source, float pitch)
@@ -112,29 +150,7 @@ class SimpleSoundPlayer
     public void write(InputStream source, float pitch, String fileName) throws UnsupportedAudioFileException, IOException {
         File outFile = new File(fileName);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        int bufferSize = format.getFrameSize() * Math.round(format.getSampleRate()/10);
-        byte[] buffer = new byte[bufferSize];
-
-        try
-        {
-            int numBytesRead = 0;
-            while(numBytesRead != -1)
-            {
-                numBytesRead = source.read(buffer, 0, buffer.length);
-                if (numBytesRead != -1)
-                {
-                    out.write(buffer, 0, numBytesRead);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        byte[] audioBytes = out.toByteArray();
+        byte[] audioBytes = getSamples(source);
 
         ByteArrayInputStream in = new ByteArrayInputStream(audioBytes);
         AudioFormat newFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, format.getSampleRate()*pitch, 16, format.getChannels(), format.getChannels() * 2, format.getSampleRate(), false);
@@ -268,4 +284,5 @@ class EchoFilter extends SoundFilter
         }
     }
 }
+
 
