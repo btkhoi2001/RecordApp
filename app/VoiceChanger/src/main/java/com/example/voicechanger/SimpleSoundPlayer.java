@@ -6,24 +6,25 @@ import java.io.*;
 class SimpleSoundPlayer
 {
     public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
+        float pitch = 1f;
+
         SimpleSoundPlayer sound = new SimpleSoundPlayer("src/Recording.wav");
 
-        InputStream stream = new ByteArrayInputStream(sound.getSamples());
+        InputStream originalStream = new ByteArrayInputStream(sound.getSamples());
 
         EchoFilter filter = new EchoFilter(11025, 0.6f);
 
-        stream = new FilteredSoundStream(stream, filter);
+        InputStream filteredStream = new FilteredSoundStream(originalStream, filter);
 
-        sound.play(stream, 1.3f);
+        //sound.play(filteredStream, pitch);
 
-        sound.write(stream, 1.3f, "src/Out.wav");
+        sound.write(originalStream, pitch, "src/Out.wav");
 
         System.exit(0);
     }
 
     private AudioFormat format;
     private byte[] samples;
-    private ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     public SimpleSoundPlayer(String fileName)
     {
@@ -94,7 +95,7 @@ class SimpleSoundPlayer
                 if(numBytesRead != -1)
                 {
                     line.write(buffer, 0, numBytesRead);
-                    out.write(buffer, 0, numBytesRead);
+                    //out.write(buffer, 0, numBytesRead);
                 }
             }
 
@@ -110,6 +111,8 @@ class SimpleSoundPlayer
 
     public void write(InputStream source, float pitch, String fileName) throws UnsupportedAudioFileException, IOException {
         File outFile = new File(fileName);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         int bufferSize = format.getFrameSize() * Math.round(format.getSampleRate()/10);
         byte[] buffer = new byte[bufferSize];
@@ -265,3 +268,4 @@ class EchoFilter extends SoundFilter
         }
     }
 }
+
