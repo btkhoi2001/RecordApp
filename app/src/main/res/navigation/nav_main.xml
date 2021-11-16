@@ -9,14 +9,36 @@
         android:id="@+id/recordFragment"
         android:name="com.ag18.record.RecordFragment"
         android:label="fragment_record"
-        tools:layout="@layout/fragment_record" />
-    <fragment
+        tools:layout="@layout/fragment_record" >
+        <action
+            android:id="@+id/action_recordFragment_to_recordingFragment"
+            app:destination="@id/recordingFragment" />
+    </fragment>
+     <fragment
         android:id="@+id/folderFragment"
         android:name="com.ag18.record.FolderFragment"
-        android:label="fragment_file" />
+        android:label="fragment_file" >
+        <action
+            android:id="@+id/action_folderFragment_to_voiceEditorFragment"
+            app:destination="@id/voiceEditorFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.ag18.record.SettingsFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/voiceEditorFragment"
+        android:name="com.ag18.record.VoiceEditorFragment"
+        android:label="fragment_voice_editor"
+        tools:layout="@layout/fragment_voice_editor" >
+        <argument
+            android:name="filePath"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/recordingFragment"
+        android:name="com.ag18.record.RecordingFragment"
+        android:label="fragment_recording"
+        tools:layout="@layout/fragment_recording" />
 </navigation>

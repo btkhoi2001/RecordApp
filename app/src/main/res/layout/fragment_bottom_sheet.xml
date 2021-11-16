@@ -6,7 +6,7 @@
     android:rowCount="2"
     android:columnCount="3"
     android:paddingTop="20dp"
-    android:background="@drawable/layout_backdrop">
+    android:background="@drawable/layout_bottomsheet">
 
     <LinearLayout
         android:layout_marginTop="20dp"
@@ -19,6 +19,7 @@
         android:layout_row="0"
         android:layout_column="0">
         <ImageButton
+            android:id="@+id/ib_listen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF060F22"
@@ -40,6 +41,7 @@
         android:layout_row="0"
         android:layout_column="1">
         <ImageButton
+            android:id="@+id/ib_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF060F22"
@@ -61,6 +63,7 @@
         android:layout_row="0"
         android:layout_column="2">
         <ImageButton
+            android:id="@+id/ib_rename"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF060F22"
@@ -83,6 +86,7 @@
         android:layout_row="1"
         android:layout_column="0">
         <ImageButton
+            android:id="@+id/ib_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF060F22"
@@ -104,6 +108,7 @@
         android:layout_row="1"
         android:layout_column="1">
         <ImageButton
+            android:id="@+id/ib_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF060F22"
@@ -125,6 +130,7 @@
         android:layout_row="1"
         android:layout_column="2">
         <ImageButton
+            android:id="@+id/ib_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF060F22"

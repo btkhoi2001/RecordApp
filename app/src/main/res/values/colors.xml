@@ -18,4 +18,5 @@
     <color name="dark_theme_title">#FFFFFFFF</color>
     <color name="dark_theme_desc">#FFD5CCCC</color>
     <color name="dark_theme_icon_playback">#FFFFFFFF</color>
+    <color name="gray">#6C6C6C</color>
 </resources>

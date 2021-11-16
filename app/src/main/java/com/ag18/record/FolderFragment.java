@@ -69,7 +69,7 @@ public class FolderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_file, container, false);
+        view = inflater.inflate(R.layout.fragment_folder, container, false);
 
         initData();
         initRecyclerView();
@@ -100,7 +100,7 @@ public class FolderFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        recordingAdapter = new RecodingAdapter(recordingList);
+        recordingAdapter = new RecodingAdapter(getContext(), view, recordingList);
         recyclerView.setAdapter(recordingAdapter);
         recordingAdapter.notifyDataSetChanged();
     }
