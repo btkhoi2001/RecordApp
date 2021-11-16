@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,7 +50,9 @@ public class RecordingFragment extends Fragment {
 
     private boolean isRecording = false;
     private int PERMISSION_CODE = 21;
-    private String recordFile;
+    private String filename;
+
+    //File filepath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RecordApp");
 
     public RecordingFragment() {
         // Required empty public constructor
@@ -90,18 +100,22 @@ public class RecordingFragment extends Fragment {
         btnRecording = view.findViewById(R.id.btn_pause);
         chronometer = view.findViewById(R.id.chronometer);
 
+
         btnRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(isRecording) {
+                    //Stop Recording
                     stopRecording();
-                    btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+                    btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
                     isRecording = false;
                 }
                 else {
+                    //Check permission to record audio
                     if(checkPermission()) {
-                        starRecording();
-                        btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
+                        //Start Recording
+                        startRecording();
+                        btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
                         isRecording = true;
                     }
                 }
@@ -109,22 +123,38 @@ public class RecordingFragment extends Fragment {
         });
     }
 
+
     private void stopRecording() {
         Toast.makeText(getActivity(), "Stop recording", Toast.LENGTH_LONG).show();
+        //Stop Timer, very obvious
+        chronometer.stop();
+
+        //Stop media recorder and set it to null for further use to record new audio
         mediaRecorder.stop();
         mediaRecorder.release();
-
         mediaRecorder = null;
     }
 
-    private void starRecording() {
-        String recordPath = getActivity().getExternalFilesDir("/").getAbsolutePath();
-        recordFile = "filename.3gp";
+    private void startRecording() {
+        //Start timer from 0
+        chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.start();
 
+        //Get app external directory path
+        String recordPath = getActivity().getExternalFilesDir("/").getAbsolutePath();
+
+        //Get current date and time
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.CANADA);
+        Date now = new Date();
+
+        //initialize filename variable with date and time at the end to ensure the new file wont overwrite previous file
+        filename = "Recording_" + formatter.format(now) + ".3gp";
+
+        //Setup Media Recorder for recording
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setOutputFile(recordPath + "/" + recordFile);
+        mediaRecorder.setOutputFile(recordPath + "/" + filename);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
@@ -133,9 +163,11 @@ public class RecordingFragment extends Fragment {
             e.printStackTrace();
         }
 
+        //Start Recording
         mediaRecorder.start();
         Toast.makeText(getActivity(), "Recording Started", Toast.LENGTH_LONG).show();
     }
+
 
     public boolean checkPermission() {
         if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {

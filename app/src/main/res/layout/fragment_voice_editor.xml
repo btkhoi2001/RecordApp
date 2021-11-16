@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:name="androidx.navigation.fragment.NavHostFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".VoiceEditorFragment"
@@ -80,8 +81,9 @@
 
                 android:background="@drawable/image_button_background"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_baseline_undo_24"
+
                 app:tint="@drawable/image_button_tint"/>
+            //android:src="@drawable/ic_baseline_undo_24"
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,9 +128,9 @@
                 android:padding="@dimen/padding_10"
                 android:scaleType="fitXY"
                 android:background="@drawable/image_button_background"
-                android:src="@drawable/ic_baseline_crop_24"
-                app:tint="@drawable/image_button_tint"/>
 
+                app:tint="@drawable/image_button_tint"/>
+            //android:src="@drawable/ic_baseline_crop_24"
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
