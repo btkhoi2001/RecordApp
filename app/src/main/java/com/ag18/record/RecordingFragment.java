@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -36,6 +37,8 @@ public class RecordingFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private Button btnSave;
+    private Button btnDelete;
     private ImageButton btnRecording;
     private Chronometer chronometer;
     private MediaRecorder mediaRecorder;
@@ -87,6 +90,8 @@ public class RecordingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        btnSave = view.findViewById(R.id.btn_save);
+        btnDelete = view.findViewById(R.id.btn_delete);
         btnRecording = view.findViewById(R.id.btn_pause);
         chronometer = view.findViewById(R.id.chronometer);
 
@@ -107,7 +112,18 @@ public class RecordingFragment extends Fragment {
                 }
             }
         });
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isRecording) {
+                    stopRecording();
+                    btnRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+                    isRecording = false;
+                }
+            }
+        });
     }
+
 
     private void stopRecording() {
         Toast.makeText(getActivity(), "Stop recording", Toast.LENGTH_LONG).show();

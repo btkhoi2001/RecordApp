@@ -12,6 +12,7 @@
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/fragment_record.xml" value="0.19429347826086957" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/fragment_recording.xml" value="0.2" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Android/Project/app/src/main/res/layout/fragment_voice_editor.xml" value="0.1" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/bg_button_pause.xml" value="0.25925925925925924" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/bg_button_record.xml" value="0.22870370370370371" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/bg_button_save.xml" value="0.22870370370370371" />
@@ -54,7 +55,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
