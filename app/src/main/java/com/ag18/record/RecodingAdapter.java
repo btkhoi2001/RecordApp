@@ -1,86 +1,91 @@
 package com.ag18.record;
 
-import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.renderscript.Sampler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import java.io.File;
 import java.util.List;
 
-import butterknife.OnClick;
-
 public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHolder> {
-    private List<RecordingItem> recordingList;
-    private Context context;
-    private View rootView;
 
-    public RecodingAdapter(Context context, View rootView, List<RecordingItem> recordingList) {
+    private View rootView;
+    private File[] allFiles;
+    private Time time;
+    private Context context;
+    private onItemListClick onItemListClick;
+
+    Activity activity;
+
+    public RecodingAdapter(Context context, View rootView, File[] allFiles, onItemListClick onItemListClick) {
         this.context = context;
         this.rootView = rootView;
-        this.recordingList = recordingList;
+        this.allFiles = allFiles;
+        this.onItemListClick = onItemListClick;
     }
 
     @NonNull
     @Override
-    public RecodingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recording_item_design, parent, false);
+        time = new Time();
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecodingAdapter.ViewHolder holder, int position) {
-        String title = recordingList.get(position).getTitle();
-        String createdAt = recordingList.get(position).getCreatedAt();
-        String duration = recordingList.get(position).getDuration();
-
-        holder.setData(title, createdAt, duration);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.list_title.setText(allFiles[position].getName());
+        holder.list_date.setText(time.getTime(allFiles[position].lastModified()));
     }
 
     @Override
     public int getItemCount() {
-        return recordingList.size();
+        return allFiles.length;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvTitle;
-        private TextView tvCreatedAt;
-        private TextView tvDuration;
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        private TextView list_title;
+        private TextView list_date;
         private ImageButton ibMoreItems;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvTitle = (TextView)itemView.findViewById(R.id.tv_title);
-            tvCreatedAt = (TextView)itemView.findViewById(R.id.tv_createdat);
-            tvDuration = (TextView)itemView.findViewById(R.id.tv_duration);
+            list_title = itemView.findViewById(R.id.tv_title);
+            list_date = itemView.findViewById(R.id.tv_createdat);
             ibMoreItems = (ImageButton)itemView.findViewById(R.id.ib_more_items);
 
             ibMoreItems.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(rootView);
+                    BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(rootView, allFiles[getAdapterPosition()].getName());
                     bottomSheetFragment.show(((AppCompatActivity)context).getSupportFragmentManager(), bottomSheetFragment.getTag());
                 }
             });
+
+            itemView.setOnClickListener(this);
+
         }
 
-        public void setData(String title, String createdAt, String duration) {
-            tvTitle.setText(title);
-            tvCreatedAt.setText(createdAt);
-            tvDuration.setText(duration);
+        @Override
+        public void onClick(View v) {
+            onItemListClick.onClickListener(allFiles[getAdapterPosition()], getAdapterPosition());
         }
     }
+
+    public interface onItemListClick {
+        void onClickListener(File file, int position);
+    }
+
 }

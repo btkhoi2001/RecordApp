@@ -51,7 +51,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d16892eb8e78e70446d5e095752dfffc4da97c7
 
 /*
  * A simple {@link Fragment} subclass.
