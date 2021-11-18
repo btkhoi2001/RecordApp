@@ -10,11 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-<<<<<<< HEAD
 
 import android.os.Environment;
-=======
->>>>>>> 7d16892eb8e78e70446d5e095752dfffc4da97c7
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;

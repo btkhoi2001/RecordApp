@@ -3,10 +3,7 @@ package com.ag18.record;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-<<<<<<< HEAD
-=======
 import android.media.RingtoneManager;
->>>>>>> 7d16892eb8e78e70446d5e095752dfffc4da97c7
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -29,13 +26,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.io.File;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
-<<<<<<< HEAD
     private ImageButton ibListen, ibShare, ibRename, ibEdit, ibDetails, ibDelete;
     private ImageButton ibSetRingtone, ibFilters;
     private File file;
-=======
-    private ImageButton ibSetRingtone, ibShare, ibRename, ibEdit, ibDetails, ibDelete;
->>>>>>> 7d16892eb8e78e70446d5e095752dfffc4da97c7
     View rootView;
     String fileName;
 
@@ -70,11 +63,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-<<<<<<< HEAD
                 bundle.putString("filePath", "/sdcard/RecordApp/test.wav");
-=======
                 bundle.putString("filePath", path + "/" + fileName);
->>>>>>> 7d16892eb8e78e70446d5e095752dfffc4da97c7
                 // Ai làm phần bottom sheet fragment thì nhớ thay test.wav bằng đường dẫn file khi chọn trong list view
 
                 NavController navController = Navigation.findNavController(rootView);
@@ -83,7 +73,6 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
             }
         });
-<<<<<<< HEAD
 
 //        ibEdit.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -97,8 +86,6 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 //
 //            }
 //        });
-=======
->>>>>>> 7d16892eb8e78e70446d5e095752dfffc4da97c7
 
         ibShare.setOnClickListener(new View.OnClickListener() {
             @Override
