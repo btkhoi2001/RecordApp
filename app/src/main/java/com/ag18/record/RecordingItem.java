@@ -5,10 +5,10 @@ public class RecordingItem {
     private String createdAt;
     private String duration;
 
-    RecordingItem(String title, String createdAt, String duration) {
+    RecordingItem(String title) {
         this.title = title;
-        this.createdAt = createdAt;
-        this.duration = duration;
+        /*this.createdAt = createdAt;
+        this.duration = duration;*/
     }
 
     public String getTitle() {

@@ -21,7 +21,7 @@
         <action
             android:id="@+id/action_folderFragment_to_voiceEditorFragment"
             app:destination="@id/voiceEditorFragment" />
-    </fragment>
+     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.ag18.record.SettingsFragment"
