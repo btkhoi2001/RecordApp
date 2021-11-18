@@ -19,6 +19,8 @@
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/bg_sub_console_record.xml" value="0.22870370370370371" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/button_background.xml" value="0.20208333333333334" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_addnew_bottomnav.xml" value="0.22870370370370371" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_auto_fix_high_24.xml" value="0.21822916666666667" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_content_cut_24.xml" value="0.21822916666666667" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_forward_5_24.xml" value="0.2703125" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_more_horiz_24.xml" value="0.2703125" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/drawable/ic_baseline_play_arrow_24.xml" value="0.22870370370370371" />
@@ -38,6 +40,8 @@
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/backdrop_item.xml" value="0.264" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/bottom_sheet_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/dialog_rename_file.xml" value="0.20208333333333334" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/filter_line.xml" value="0.5" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_file.xml" value="0.21510416666666668" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_folder.xml" value="0.536" />
@@ -47,7 +51,10 @@
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_recording.xml" value="0.264" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_settings.xml" value="0.20833333333333334" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_voice_editor.xml" value="0.264" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_voice_filter.xml" value="0.33" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/fragment_voice_filters.xml" value="0.20208333333333334" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/list_recordings.xml" value="0.4" />
+        <entry key="..\:/Android/RecordApp/app/src/main/res/layout/player_sheet.xml" value="0.20208333333333334" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/recording_item_design.xml" value="0.4" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/layout/settings_activity.xml" value="0.21510416666666668" />
         <entry key="..\:/Android/RecordApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />

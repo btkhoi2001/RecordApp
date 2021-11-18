@@ -37,8 +37,21 @@
             app:argType="string" />
     </fragment>
     <fragment
+        android:id="@+id/voiceFilterFragment"
+        android:name="com.ag18.record.VoiceFilterFragment"
+        android:label="fragment_voice_filter"
+        tools:layout="@layout/fragment_voice_filter" >
+        <argument
+            android:name="filePath"
+            app:argType="string" />
+    </fragment>
+    <fragment
         android:id="@+id/recordingFragment"
         android:name="com.ag18.record.RecordingFragment"
         android:label="fragment_recording"
-        tools:layout="@layout/fragment_recording" />
+        tools:layout="@layout/fragment_recording" >
+        <action
+            android:id="@+id/action_recordingFragment_to_voiceFilterFragment"
+            app:destination="@id/voiceFilterFragment" />
+    </fragment>
 </navigation>

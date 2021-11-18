@@ -18,7 +18,11 @@ import android.widget.ImageButton;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
+<<<<<<< Updated upstream
     private ImageButton ibListen, ibShare, ibRename, ibEdit, ibDetails, ibDelete;
+=======
+    private ImageButton ibSetRingtone, ibShare, ibRename, ibEdit, ibDetails, ibDelete, ibFilters;
+>>>>>>> Stashed changes
     View rootView;
 
     public BottomSheetFragment(View rootView) {
@@ -51,6 +55,39 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                 NavController navController = Navigation.findNavController(rootView);
                 navController.navigate(R.id.action_folderFragment_to_voiceEditorFragment, bundle);
                 dismiss();
+<<<<<<< Updated upstream
+=======
+
+            }
+        });
+
+        ibEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("filePath", path + "/" + fileName);
+
+                NavController navController = Navigation.findNavController(rootView);
+                navController.navigate(R.id.action_folderFragment_to_voiceEditorFragment, bundle);
+                dismiss();
+
+            }
+        });
+
+        ibShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!file.exists()){
+                    file.mkdir();
+                }
+
+                Intent intentShare = new Intent(Intent.ACTION_SEND);
+                intentShare.setType("audio/3gp");
+                intentShare.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+file));
+
+                startActivity(Intent.createChooser(intentShare,"Share the file"));
+>>>>>>> Stashed changes
             }
         });
 
