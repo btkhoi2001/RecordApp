@@ -9,4 +9,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "RecordApp"
 include ':app'
-include ':app:VoiceChanger'
