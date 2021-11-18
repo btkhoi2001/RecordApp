@@ -19,12 +19,10 @@ import androidx.loader.content.AsyncTaskLoader;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-<<<<<<< Updated upstream
-=======
 import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
->>>>>>> Stashed changes
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +32,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-<<<<<<< Updated upstream
+
 import java.io.IOException;
-=======
+
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -53,7 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
->>>>>>> Stashed changes
+
 
 /*
  * A simple {@link Fragment} subclass.

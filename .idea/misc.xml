@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/MyProject/RecordApp/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.1" />
+        <entry key="..\:/Android/MyProject/RecordApp/app/src/main/res/layout/fragment_voice_editor.xml" value="0.1" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/drawable/bg_button_pause.xml" value="0.2203125" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/activity_main.xml" value="0.13269927536231885" />
         <entry key="..\:/Android/Project/RecordApp/app/src/main/res/layout/bg_button_pause.xml" value="0.19429347826086957" />
