@@ -20,9 +20,21 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="50px"
         android:baselineAligned="false"
         android:gravity="center"
         android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/btn_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="0px"
+            android:background="@drawable/bg_button_pause"
+            android:src="@drawable/ic_baseline_play_arrow_24"
+            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/btn_pause"
@@ -32,7 +44,28 @@
             android:layout_marginTop="0px"
             android:background="@drawable/bg_button_pause"
             android:src="@drawable/ic_pause"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/btn_resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="0px"
+            android:background="@drawable/bg_button_pause"
+            android:src="@drawable/ic_baseline_play_arrow_24"
+            app:tint="@color/white"
+            android:visibility="gone"/>
     </LinearLayout>
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Cancel"
+        android:textColor="@color/button_delete"
+        android:textSize="16sp"
+        android:background="@drawable/bg_button_save"/>
 
 </LinearLayout>
