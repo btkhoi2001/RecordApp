@@ -170,56 +170,83 @@ public class RecordingFragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_CODE);
         }
         minBufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
+
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, minBufferSize);
         audioRecord.startRecording();
         isRecording = true;
         recordingThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                writeAudioDataToFile(b);
+                try {
+                    writeAudioDataToFile(b);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }, "AudioRecorder Thread");
         recordingThread.start();
     }
 
-    private void writeAudioDataToFile(boolean b) {
+    private void writeAudioDataToFile(boolean b) throws IOException {
         byte data[] = new byte[minBufferSize];
         String filename = getTempFilename();
-        FileOutputStream os = null;
+//        FileOutputStream os = null;
 
+        //File myFile = new File(Environment.getExternalStorageDirectory(), "temp.pcm");
+        File myFile = new File(filename);
+        myFile.createNewFile();
+        OutputStream outputStream = new FileOutputStream(myFile, b);
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+        DataOutputStream dataOutputStream = new DataOutputStream(bufferedOutputStream);
+
+        short[] audioData = new short[minBufferSize];
+
+        while (isRecording) {
+            int numShortsRead = audioRecord.read(audioData, 0, minBufferSize);
+            for (int i = 0; i < numShortsRead; i++)
+            {
+                dataOutputStream.writeShort(audioData[i]);
+            }
+        }
         try {
-            os = new FileOutputStream(filename, b);
-        } catch (FileNotFoundException e) {
+            outputStream.close();
+            bufferedOutputStream.close();
+            dataOutputStream.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        int read = 0;
-
-        if (os != null) {
-            while (isRecording) {
-                read = audioRecord.read(data, 0, minBufferSize);
-
-                if (AudioRecord.ERROR_INVALID_OPERATION != read) {
-                    try {
-                        os.write(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            try {
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        try {
+//            os = new FileOutputStream(filename, b);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//        int read = 0;
+//
+//        if (os != null) {
+//                read = audioRecord.read(data, 0, minBufferSize);
+//
+//                if (AudioRecord.ERROR_INVALID_OPERATION != read) {
+//                    try {
+//                        os.write(data);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//
+//        try {
+//            os.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private String getTempFilename() {
-        //String filepath = Environment.getExternalStorageDirectory().getPath();
-        String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
-        File file = new File(externalStorage + "/recording_temp.raw");
+        String filepath = Environment.getExternalStorageDirectory().getPath();
+        //String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+        File file = new File(filepath + "/recording_temp.raw");
         try {
             file.createNewFile();
         } catch (IOException e) {
