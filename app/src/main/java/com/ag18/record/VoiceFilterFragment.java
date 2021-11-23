@@ -77,7 +77,7 @@ public class VoiceFilterFragment extends Fragment {
     float pitch = 1f;
     String selectedEffect = "None";
 
-    File file = new File(Environment.getExternalStorageDirectory(), "temp.pcm");
+    File file = new File(Environment.getExternalStorageDirectory(), "recording_temp.raw");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

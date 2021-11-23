@@ -171,7 +171,7 @@ public class RecordingFragment extends Fragment {
         }
         minBufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
 
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, minBufferSize);
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, minBufferSize);
         audioRecord.startRecording();
         isRecording = true;
         recordingThread = new Thread(new Runnable() {
