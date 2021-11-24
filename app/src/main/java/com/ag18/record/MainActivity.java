@@ -8,7 +8,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,17 +15,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.io.File;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     NavController navController;
 
+    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -34,12 +33,22 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.MANAGE_EXTERNAL_STORAGE
     };
 
-    public void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        NavController navController = Navigation.findNavController(this, R.id.fragment);
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
+
+        verifyStoragePermissions(this);
+    }
+
+    private void verifyStoragePermissions(Activity activity) {
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
@@ -56,17 +65,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    private void createFolder() {
+        String tmpDir = externalStorage + "/.temp";
+        File hiddenTmpDir = new File(tmpDir);
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        NavController navController = Navigation.findNavController(this, R.id.fragment);
-        NavigationUI.setupWithNavController(bottomNavigationView, navController);
-
-        verifyStoragePermissions(this);
-
-
+        if (!hiddenTmpDir.exists())
+            hiddenTmpDir.mkdir();
     }
 }
