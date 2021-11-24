@@ -37,10 +37,6 @@ import java.io.OutputStream;
 
 
 public class RecordingFragment extends Fragment {
-    private static final int RECORDER_SAMPLE_RATE = 8000;
-    private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_STEREO;
-    private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-
     private ImageButton btnRecord;
     private ImageButton btnPause;
     private ImageButton btnResume;
