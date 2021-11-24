@@ -62,6 +62,10 @@ public class RecordingFragment extends Fragment {
     private View view = null;
     private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
 
+    int frequency = 44100;
+    int channelConfiguration = 2;
+    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+
     private long timeWhenStopped = 0;
 
     @Override
@@ -85,8 +89,6 @@ public class RecordingFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        minBufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
 
         btnStop = view.findViewById(R.id.btn_stop);
         btnPause = view.findViewById(R.id.btn_pause);
@@ -138,7 +140,9 @@ public class RecordingFragment extends Fragment {
         chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
         chronometer.start();
 
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, minBufferSize);
+        minBufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
+
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, minBufferSize);
         audioRecord.startRecording();
         isRecording = true;
 
@@ -176,7 +180,7 @@ public class RecordingFragment extends Fragment {
     }
 
     private String getTempFilename() {
-        File file = new File(externalStorage + "/.tmp/recording_temp.raw");
+        File file = new File(externalStorage + "/.temp/recording_temp.raw");
 
         try {
             file.createNewFile();
@@ -188,7 +192,6 @@ public class RecordingFragment extends Fragment {
     }
 
     private void writeAudioDataToFile(boolean b) throws IOException {
-        byte data[] = new byte[minBufferSize];
         String filename = getTempFilename();
 
         File myFile = new File(filename);

@@ -37,7 +37,6 @@ import java.util.ArrayList;
 
 public class VoiceFilterFragment extends Fragment {
     private ImageButton ibPlay, ibSave;
-    private TextView tvFileName;
     private AudioTrack audioTrack;
     private View view;
 
@@ -53,7 +52,7 @@ public class VoiceFilterFragment extends Fragment {
     String selectedEffect = "None";
 
     private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
-    File file = new File(Environment.getExternalStorageDirectory(), "/.tmp/temp.pcm");
+    File file = new File(externalStorage + "/.temp/recording_temp.raw");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -274,8 +273,7 @@ public class VoiceFilterFragment extends Fragment {
         return bytes;
     }
 
-    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {
-        byte[] header = new byte[44];
+    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {        byte[] header = new byte[44];
         header[0] = 'R'; // RIFF/WAVE header
         header[1] = 'I';
         header[2] = 'F';

@@ -55,6 +55,8 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     private Handler seekbarHandler;
     private Runnable updateSeekbar;
 
+    private String path = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+
     public FolderFragment() {
         // Required empty public constructor
     }
@@ -81,7 +83,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
 
         playerSeekbar = view.findViewById(R.id.player_seekbar);
 
-        String path = getActivity().getExternalFilesDir("/").getAbsolutePath();
         File directory = new File(path);
         allFiles = directory.listFiles();
 
