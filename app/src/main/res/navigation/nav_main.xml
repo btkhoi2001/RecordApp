@@ -44,6 +44,9 @@
         <argument
             android:name="filePath"
             app:argType="string" />
+        <action
+            android:id="@+id/action_voiceFilterFragment_to_recordFragment"
+            app:destination="@id/recordFragment" />
     </fragment>
     <fragment
         android:id="@+id/recordingFragment"
@@ -52,6 +55,7 @@
         tools:layout="@layout/fragment_recording" >
         <action
             android:id="@+id/action_recordingFragment_to_voiceFilterFragment"
-            app:destination="@id/voiceFilterFragment" />
+            app:destination="@id/voiceFilterFragment"
+            app:popUpTo="@id/recordFragment" />
     </fragment>
 </navigation>

@@ -80,7 +80,7 @@
 
                 android:background="@drawable/image_button_background"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_baseline_save_24"
+                android:src="@drawable/ic_baseline_undo_24"
                 app:tint="@drawable/image_button_tint"/>
             <TextView
                 android:layout_width="match_parent"
@@ -126,7 +126,7 @@
                 android:padding="@dimen/padding_10"
                 android:scaleType="fitXY"
                 android:background="@drawable/image_button_background"
-                android:src="@drawable/ic_baseline_save_24"
+                android:src="@drawable/ic_baseline_crop_24"
                 app:tint="@drawable/image_button_tint"/>
 
             <TextView

@@ -3,23 +3,16 @@ package com.ag18.record;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.AudioTrack;
-import android.media.MediaCodec;
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.net.rtp.AudioStream;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import android.os.Environment;
-import android.os.Handler;
-import android.preference.PreferenceActivity;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,45 +23,26 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.arthenica.ffmpegkit.FFmpegKit;
-import com.arthenica.ffmpegkit.FFmpegKitConfig;
-import com.jaygoo.widget.OnRangeChangedListener;
-import com.jaygoo.widget.RangeSeekBar;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.Buffer;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Stack;
-import java.util.UUID;
-
 
 public class VoiceFilterFragment extends Fragment {
     private ImageButton ibPlay, ibSave;
-    private TextView tvFileName;
     private AudioTrack audioTrack;
     private View view;
 
-
-    int frequency;
-    int channelConfiguration;
-    int audioEncoding;
+    int frequency = 44100;
+    int channelConfiguration = 2;
+    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
     private ListView listView;
     ArrayList<Filter> filtersList;
@@ -77,7 +51,8 @@ public class VoiceFilterFragment extends Fragment {
     float pitch = 1f;
     String selectedEffect = "None";
 
-    File file = new File(Environment.getExternalStorageDirectory(), "temp.pcm");
+    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+    File file = new File(externalStorage + "/.temp/recording_temp.raw");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,11 +64,7 @@ public class VoiceFilterFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_voice_filter, container, false);
 
         ibPlay = view.findViewById(R.id.ib_play_test);
-        ibSave = view.findViewById(R.id.ib_save);
-
-        tvFileName = view.findViewById(R.id.tv_file_name);
-
-        tvFileName.setText("test.wav");
+        ibSave = view.findViewById(R.id.ib_save_file);
 
         listView = view.findViewById(R.id.filter_list);
 
@@ -109,10 +80,12 @@ public class VoiceFilterFragment extends Fragment {
         filterAdapter = new FilterAdapter(getContext(), R.layout.filter_line, filtersList);
         listView.setAdapter(filterAdapter);
 
-        frequency = getArguments().getInt("frequency");
-        channelConfiguration = getArguments().getInt("channel");
-        audioEncoding = getArguments().getInt("encoding");
+        setListener();
 
+        return view;
+    }
+
+    void setListener() {
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,12 +100,50 @@ public class VoiceFilterFragment extends Fragment {
         ibSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    saveRecord();
-                    Toast.makeText(getActivity(), "Saved file", Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+                LinearLayout linearLayout = new LinearLayout(getActivity());
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams.setMargins(50, 0, 50, 100);
+
+                EditText input = new EditText(getActivity());
+                input.setGravity(Gravity.TOP | Gravity.START);
+                input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+
+                linearLayout.addView(input, layoutParams);
+
+                alert.setMessage("Name");
+                alert.setTitle("Save record");
+                alert.setView(linearLayout);
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String prefix = input.getText().toString();
+
+                        try {
+                            saveRecord(externalStorage + "/" + prefix + ".wav");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        NavController navController = Navigation.findNavController(view);
+                        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.recordFragment, true).build();
+                        navController.navigate(R.id.action_voiceFilterFragment_to_recordFragment, null, navOptions);
+
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                alert.show();
             }
         });
 
@@ -142,8 +153,6 @@ public class VoiceFilterFragment extends Fragment {
                 selectedEffect = filtersList.get(i).getName();
             }
         });
-
-        return view;
     }
 
     private short[] readData() throws IOException {
@@ -264,8 +273,7 @@ public class VoiceFilterFragment extends Fragment {
         return bytes;
     }
 
-    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {
-        byte[] header = new byte[44];
+    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {        byte[] header = new byte[44];
         header[0] = 'R'; // RIFF/WAVE header
         header[1] = 'I';
         header[2] = 'F';
@@ -314,7 +322,7 @@ public class VoiceFilterFragment extends Fragment {
         return header;
     }
 
-    private void saveRecord() throws IOException {
+    private void saveRecord(String filePath) throws IOException {
         short[] audioData = readData();
 
         switch (selectedEffect)
@@ -346,7 +354,7 @@ public class VoiceFilterFragment extends Fragment {
                 pitch = 1f;
         }
 
-        File out = new File(Environment.getExternalStorageDirectory(), "test.wav");
+        File out = new File(filePath);
         byte[] audio = shortToBytes(audioData);
 
         long chunk1Size = 16; //RIFF chunk
@@ -375,6 +383,17 @@ public class VoiceFilterFragment extends Fragment {
         outputStream.write(data);
         System.out.println("Wrote to " + out.getAbsolutePath());
         outputStream.close();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        try {
+            org.apache.commons.io.FileUtils.cleanDirectory(new File(externalStorage + "/.temp"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

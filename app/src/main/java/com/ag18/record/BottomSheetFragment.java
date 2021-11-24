@@ -26,9 +26,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.io.File;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
-    private ImageButton ibSetRingtone, ibShare, ibRename, ibEdit, ibDetails, ibDelete;
+    private ImageButton ibListen, ibShare, ibRename, ibEdit, ibDetails, ibDelete;
+    private ImageButton ibSetRingtone, ibFilters;
+    private File file;
     View rootView;
     String fileName;
+    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
 
     public BottomSheetFragment(View rootView, String fileName) {
         this.rootView = rootView;
@@ -45,9 +48,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bottom_sheet, container, false);
 
-        String path = getActivity().getExternalFilesDir("/").getAbsolutePath();
-        ContentValues values = new ContentValues();
-        File file = new File(path + "/" + fileName);
+        File file = new File(externalStorage + "/" + fileName);
 
 
         ibSetRingtone = view.findViewById(R.id.ib_listen);
@@ -61,15 +62,26 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString("filePath", path + "/" + fileName);
-                // Ai làm phần bottom sheet fragment thì nhớ thay test.wav bằng đường dẫn file khi chọn trong list view
+                bundle.putString("filePath", externalStorage + "/" + fileName);
 
                 NavController navController = Navigation.findNavController(rootView);
                 navController.navigate(R.id.action_folderFragment_to_voiceEditorFragment, bundle);
                 dismiss();
-
             }
         });
+
+//        ibEdit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Bundle bundle = new Bundle();
+//                bundle.putString("filePath", path + "/" + fileName);
+//
+//                NavController navController = Navigation.findNavController(rootView);
+//                navController.navigate(R.id.action_folderFragment_to_voiceEditorFragment, bundle);
+//                dismiss();
+//
+//            }
+//        });
 
         ibShare.setOnClickListener(new View.OnClickListener() {
             @Override
