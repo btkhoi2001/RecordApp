@@ -93,21 +93,23 @@ public class RecordingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (!isRecording) {
-                        btnPause.setVisibility(View.VISIBLE);
-                        btnResume.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(), "Recording Started", Toast.LENGTH_LONG).show();
-                        btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
-                        new Thread( (Runnable) () ->
-                        {
-                            try {
-                                startRecording(false);
-                            } catch (IOException e) {
-                                isRecording = false;
-                                e.printStackTrace();
-                            }
-                        }).start();
+                    chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                    chronometer.start();
+                    btnPause.setVisibility(View.VISIBLE);
+                    btnResume.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(), "Recording Started", Toast.LENGTH_LONG).show();
+                    btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
+                    new Thread( (Runnable) () ->
+                    {
+                        try {
+                            startRecording(false);
+                        } catch (IOException e) {
+                            isRecording = false;
+                            e.printStackTrace();
+                        }
+                    }).start();
                 } else {
-                    chronometer.setBase(SystemClock.elapsedRealtime());
+                    chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                     timeWhenStopped = 0;
                     chronometer.stop();
                     Toast.makeText(getActivity(), "Recording Finished", Toast.LENGTH_LONG).show();
@@ -163,8 +165,6 @@ public class RecordingFragment extends Fragment {
 
     private void startRecording(final boolean b) throws IOException {
         //btnPause.setVisibility(View.VISIBLE);
-        chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-        chronometer.start();
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_CODE);

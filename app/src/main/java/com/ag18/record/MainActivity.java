@@ -22,8 +22,10 @@ import android.view.WindowManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
+
 @RequiresApi(api = Build.VERSION_CODES.R)
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     BottomNavigationView bottomNavigationView;
     NavController navController;
 

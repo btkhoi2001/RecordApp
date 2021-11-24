@@ -1,7 +1,9 @@
 package com.ag18.record;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -14,7 +16,10 @@ import android.net.rtp.AudioStream;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavHostController;
 import androidx.navigation.Navigation;
 
 import android.os.Environment;
@@ -53,13 +58,16 @@ import java.io.OutputStream;
 import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Stack;
 import java.util.UUID;
 
 
-public class VoiceFilterFragment extends Fragment {
+public class VoiceFilterFragment extends Fragment{
     private ImageButton ibPlay, ibSave;
     private TextView tvFileName;
     private AudioTrack audioTrack;
@@ -77,6 +85,11 @@ public class VoiceFilterFragment extends Fragment {
     float pitch = 1f;
     String selectedEffect = "None";
 
+    String saveName = "test";
+    String extension = ".wav";
+
+    NavController navController;
+
     File file = new File(Environment.getExternalStorageDirectory(), "recording_temp.raw");
 
     @Override
@@ -93,7 +106,7 @@ public class VoiceFilterFragment extends Fragment {
 
         tvFileName = view.findViewById(R.id.tv_file_name);
 
-        tvFileName.setText("test.wav");
+        tvFileName.setText("Tune up your record");
 
         listView = view.findViewById(R.id.filter_list);
 
@@ -127,12 +140,7 @@ public class VoiceFilterFragment extends Fragment {
         ibSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    saveRecord();
-                    Toast.makeText(getActivity(), "Saved file", Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                saveDialog();
             }
         });
 
@@ -144,6 +152,12 @@ public class VoiceFilterFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);
     }
 
     private short[] readData() throws IOException {
@@ -346,7 +360,7 @@ public class VoiceFilterFragment extends Fragment {
                 pitch = 1f;
         }
 
-        File out = new File(Environment.getExternalStorageDirectory(), "test.wav");
+        File out = new File(Environment.getExternalStorageDirectory(), saveName + extension);
         byte[] audio = shortToBytes(audioData);
 
         long chunk1Size = 16; //RIFF chunk
@@ -375,6 +389,49 @@ public class VoiceFilterFragment extends Fragment {
         outputStream.write(data);
         System.out.println("Wrote to " + out.getAbsolutePath());
         outputStream.close();
+    }
+
+    @SuppressLint("ResourceAsColor")
+    public void saveDialog(){
+        TextView title = new TextView(getActivity());
+        title.setText("Save name");
+        title.setPadding(20, 30, 20, 30);
+        title.setTextSize(20F);
+        title.setBackgroundColor(R.color.design_default_color_secondary_variant);
+        title.setTextColor(Color.WHITE);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.save_dialog, null);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        String currentDateAndTime = sdf.format(new Date());
+
+        EditText fileName = (EditText) view.findViewById(R.id.saveName);
+        fileName.setText("Recording_" + currentDateAndTime);
+
+        builder.setView(view).setCustomTitle(title).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                saveName = fileName.getText().toString();
+                try {
+                    saveRecord();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(getActivity(), "Saved file", Toast.LENGTH_SHORT).show();
+                navController.navigate(R.id.action_voiceFilterFragment_to_recordFragment);
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
 
