@@ -66,6 +66,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createFolder() {
+        File dir = new File(externalStorage);
+
+        if (!dir.exists())
+            dir.mkdir();
+
         String tmpDir = externalStorage + "/.temp";
         File hiddenTmpDir = new File(tmpDir);
 

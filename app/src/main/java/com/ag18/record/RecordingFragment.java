@@ -56,7 +56,7 @@ public class RecordingFragment extends Fragment {
 
     boolean isRecording = true;
     private AudioRecord audioRecord = null;
-    private int bufferSize = 0;
+    private int minBufferSize = 0;
     private Thread recordingThread = null;
 
     private View view = null;
@@ -80,7 +80,13 @@ public class RecordingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
+        try {
+            org.apache.commons.io.FileUtils.cleanDirectory(new File(externalStorage + "/.temp"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        minBufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
 
         btnStop = view.findViewById(R.id.btn_stop);
         btnPause = view.findViewById(R.id.btn_pause);
@@ -132,14 +138,18 @@ public class RecordingFragment extends Fragment {
         chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
         chronometer.start();
 
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLE_RATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, minBufferSize);
         audioRecord.startRecording();
         isRecording = true;
 
         recordingThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                writeAudioDataToFile(b);
+                try {
+                    writeAudioDataToFile(b);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -177,37 +187,32 @@ public class RecordingFragment extends Fragment {
         return (file.getAbsolutePath());
     }
 
-    private void writeAudioDataToFile(boolean b) {
-        byte data[] = new byte[bufferSize];
+    private void writeAudioDataToFile(boolean b) throws IOException {
+        byte data[] = new byte[minBufferSize];
         String filename = getTempFilename();
-        FileOutputStream fileOutputStream = null;
 
-        try {
-            fileOutputStream = new FileOutputStream(filename, b);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        File myFile = new File(filename);
+        myFile.createNewFile();
+        OutputStream outputStream = new FileOutputStream(myFile, b);
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+        DataOutputStream dataOutputStream = new DataOutputStream(bufferedOutputStream);
+
+        short[] audioData = new short[minBufferSize];
+
+        while (isRecording) {
+            int numShortsRead = audioRecord.read(audioData, 0, minBufferSize);
+            for (int i = 0; i < numShortsRead; i++)
+            {
+                dataOutputStream.writeShort(audioData[i]);
+            }
         }
 
-        int read = 0;
-
-        if (fileOutputStream != null) {
-            while (isRecording) {
-                read = audioRecord.read(data, 0, bufferSize);
-
-                if (AudioRecord.ERROR_INVALID_OPERATION != read) {
-                    try {
-                        fileOutputStream.write(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            try {
-                fileOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            outputStream.close();
+            bufferedOutputStream.close();
+            dataOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
