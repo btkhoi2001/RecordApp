@@ -4,77 +4,48 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.AudioTrack;
-import android.media.MediaCodec;
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.net.rtp.AudioStream;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavHostController;
 import androidx.navigation.Navigation;
 
 import android.os.Environment;
-import android.os.Handler;
-import android.preference.PreferenceActivity;
-import android.text.InputType;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arthenica.ffmpegkit.FFmpegKit;
-import com.arthenica.ffmpegkit.FFmpegKitConfig;
-import com.jaygoo.widget.OnRangeChangedListener;
-import com.jaygoo.widget.RangeSeekBar;
-
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.Buffer;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Stack;
-import java.util.UUID;
 
 
 public class VoiceFilterFragment extends Fragment{
-    private ImageButton ibPlay, ibSave;
+    private ImageButton ibPlay, ibSave, ibStop;
     private TextView tvFileName;
     private AudioTrack audioTrack;
     private View view;
 
-
-    int frequency;
+    int sampleRateConfiguration;
     int channelConfiguration;
     int audioEncoding;
 
@@ -90,7 +61,42 @@ public class VoiceFilterFragment extends Fragment{
 
     NavController navController;
 
+    PlayTask playTask;
+
     File file = new File(Environment.getExternalStorageDirectory(), "recording_temp.raw");
+
+    private class PlayTask extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected void onPreExecute()
+        {
+            ibPlay.setVisibility(View.GONE);
+            ibStop.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            double playTime = 0;
+            try {
+                playTime = playRecord();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                Thread.sleep((long) (playTime*1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v)
+        {
+            ibPlay.setVisibility(View.VISIBLE);
+            ibStop.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,6 +109,7 @@ public class VoiceFilterFragment extends Fragment{
 
         ibPlay = view.findViewById(R.id.ib_play_test);
         ibSave = view.findViewById(R.id.ib_save);
+        ibStop = view.findViewById(R.id.ib_stop_test);
 
         tvFileName = view.findViewById(R.id.tv_file_name);
 
@@ -122,18 +129,28 @@ public class VoiceFilterFragment extends Fragment{
         filterAdapter = new FilterAdapter(getContext(), R.layout.filter_line, filtersList);
         listView.setAdapter(filterAdapter);
 
-        frequency = getArguments().getInt("frequency");
+        sampleRateConfiguration = getArguments().getInt("sample_rate");
         channelConfiguration = getArguments().getInt("channel");
         audioEncoding = getArguments().getInt("encoding");
+
 
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    playRecord();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                playTask = new PlayTask();
+                playTask.execute();
+            }
+        });
+
+        ibStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ibPlay.setVisibility(View.VISIBLE);
+                ibStop.setVisibility(View.GONE);
+                audioTrack.stop();
+                audioTrack.flush();
+                audioTrack.release();
+                playTask.cancel(true);
             }
         });
 
@@ -181,7 +198,8 @@ public class VoiceFilterFragment extends Fragment{
         return data;
     }
 
-    private void playRecord() throws IOException {
+    @SuppressLint("ResourceAsColor")
+    private double playRecord() throws IOException {
         int shortSizeInBytes = Short.SIZE / Byte.SIZE;
         int bufferSizeInBytes = (int) (file.length() / shortSizeInBytes);
 
@@ -219,9 +237,11 @@ public class VoiceFilterFragment extends Fragment{
                 pitch = 1f;
         }
 
-        audioTrack = new AudioTrack(3, (int) (frequency*pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
+        audioTrack = new AudioTrack(3, (int) (sampleRateConfiguration *pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
         audioTrack.play();
         audioTrack.write(audioData, 0, bufferSizeInBytes);
+
+        return audioData.length / (sampleRateConfiguration * pitch);
     }
 
     private short[] echoFilter(short[] data, int numDelay, float decay)
@@ -367,7 +387,7 @@ public class VoiceFilterFragment extends Fragment{
         byte bitsPerSample = 16; //ENCODING-16-BITS
         int format = 1; //PCM
         int channels = channelConfiguration;
-        int sampleRate = (int) (frequency / 2 * pitch);
+        int sampleRate = (int) (sampleRateConfiguration / 2 * pitch);
         long byteRate = (long) sampleRate * channels * bitsPerSample/8;
         int blockAlign = (int) (channels * bitsPerSample/8);
 
