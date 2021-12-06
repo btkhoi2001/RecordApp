@@ -18,17 +18,14 @@
             android:entryValues="@array/format_values"
             android:defaultValue="wav"
             app:useSimpleSummaryProvider="true"/>
-        <EditTextPreference
-            app:key="timing"
-            app:title="Timer (in minutes)"
-            android:defaultValue="0"
-            app:useSimpleSummaryProvider="true" />
         <SeekBarPreference
-            android:max="48"
+            android:max="48100"
             app:key="sample_rate"
-            app:min="8"
+            app:min="8600"
+            android:defaultValue="48100"
+            app:seekBarIncrement="100"
             app:showSeekBarValue="true"
-            app:title="Sample rate (in kHz)" />
+            app:title="Sample rate (Hz)" />
     </PreferenceCategory>
 
 </PreferenceScreen>

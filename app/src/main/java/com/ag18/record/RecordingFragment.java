@@ -1,6 +1,7 @@
 package com.ag18.record;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -13,6 +14,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
+
 import android.os.Environment;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -25,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
+import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -55,7 +59,7 @@ public class RecordingFragment extends Fragment {
 
     NavController navController;
 
-    int frequency = 44100;
+    int sampleRate = 44100;
     int channelConfiguration = 2;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
@@ -75,6 +79,8 @@ public class RecordingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        loadSettings();
 
         btnRecord = view.findViewById(R.id.btn_record);
         btnCancel = view.findViewById(R.id.btn_cancel);
@@ -113,7 +119,7 @@ public class RecordingFragment extends Fragment {
                     btnPause.setVisibility(View.GONE);
                     btnResume.setVisibility(View.GONE);
                     Bundle bundle = new Bundle();
-                    bundle.putInt("frequency", frequency);
+                    bundle.putInt("sample_rate", sampleRate);
                     bundle.putInt("channel", channelConfiguration);
                     bundle.putInt("encoding", audioEncoding);
                     stopRecording(false);
@@ -165,9 +171,9 @@ public class RecordingFragment extends Fragment {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_CODE);
         }
-        minBufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
+        minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfiguration, audioEncoding);
 
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, minBufferSize);
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfiguration, audioEncoding, minBufferSize);
         audioRecord.startRecording();
         isRecording = true;
         recordingThread = new Thread(new Runnable() {
@@ -273,6 +279,13 @@ public class RecordingFragment extends Fragment {
     private void deleteTempFile() {
         File file = new File(getTempFilename());
         file.delete();
+    }
+
+    private void loadSettings()
+    {
+        SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        sampleRate = sharedPreference.getInt("sample_rate", 48100);
     }
 
 

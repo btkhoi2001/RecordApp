@@ -31,7 +31,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="50px"
             android:layout_marginTop="0px"
+            android:layout_marginRight="50px"
             android:background="@drawable/bg_button_pause"
             android:src="@drawable/ic_baseline_play_arrow_24"
             app:tint="@color/white" />
@@ -41,11 +43,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="50px"
             android:layout_marginTop="0px"
+            android:layout_marginRight="50px"
             android:background="@drawable/bg_button_pause"
             android:src="@drawable/ic_pause"
-            app:tint="@color/white"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/btn_resume"
