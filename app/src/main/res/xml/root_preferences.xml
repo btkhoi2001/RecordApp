@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <PreferenceCategory app:title="Display Settings">
-
-        <SwitchPreferenceCompat
-            app:key="theme"
-            app:title="Dark theme" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="Record Settings">
+    <PreferenceCategory app:title="RECORD SETTINGS">
         <ListPreference
             app:key="format"
             app:title="File format"
@@ -26,6 +17,14 @@
             app:seekBarIncrement="100"
             app:showSeekBarValue="true"
             app:title="Sample rate (Hz)" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="CREDIT">
+        <ListPreference
+            android:dialogMessage="&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten"
+            android:entries="@array/reply_entries"
+            android:entryValues="@array/reply_values"
+            android:key="credit"
+            android:title="About us"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
