@@ -56,6 +56,8 @@ public class RecordingFragment extends Fragment {
     private int minBufferSize = 0;
     private long timeWhenStopped = 0;
 
+    private String path;
+
 
     NavController navController;
 
@@ -122,6 +124,7 @@ public class RecordingFragment extends Fragment {
                     bundle.putInt("sample_rate", sampleRate);
                     bundle.putInt("channel", channelConfiguration);
                     bundle.putInt("encoding", audioEncoding);
+                    bundle.putString("path", path);
                     stopRecording(false);
                     navController.navigate(R.id.action_recordingFragment_to_voiceFilterFragment, bundle);
                 }
@@ -170,7 +173,10 @@ public class RecordingFragment extends Fragment {
         //btnPause.setVisibility(View.VISIBLE);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_CODE);
+            new Thread( (Runnable) () ->
+            {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_CODE);
+            }).start();
         }
         minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfiguration, audioEncoding);
 
@@ -247,9 +253,8 @@ public class RecordingFragment extends Fragment {
     }
 
     private String getTempFilename() {
-        String filepath = Environment.getExternalStorageDirectory().getPath();
         //String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
-        File file = new File(filepath + "/recording_temp.raw");
+        File file = new File(path + "/recording_temp.raw");
         try {
             file.createNewFile();
         } catch (IOException e) {
@@ -287,7 +292,7 @@ public class RecordingFragment extends Fragment {
         SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         sampleRate = sharedPreference.getInt("sample_rate", 48100);
-        String path = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
+        path = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
         System.out.println("Path:" + path);
         System.out.println("Sample rate:" + sampleRate);
     }

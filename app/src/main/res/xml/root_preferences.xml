@@ -2,13 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory app:title="RECORD SETTINGS">
-        <ListPreference
-            app:key="format"
-            app:title="File format"
-            android:entries="@array/format_entries"
-            android:entryValues="@array/format_values"
-            android:defaultValue="wav"
-            app:useSimpleSummaryProvider="true"/>
         <SeekBarPreference
             android:max="48100"
             app:key="sample_rate"

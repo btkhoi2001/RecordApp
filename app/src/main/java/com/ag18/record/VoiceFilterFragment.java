@@ -59,11 +59,13 @@ public class VoiceFilterFragment extends Fragment{
     String saveName = "test";
     String extension = ".wav";
 
+    String path;
+
     NavController navController;
 
     PlayTask playTask;
 
-    File file = new File(Environment.getExternalStorageDirectory(), "recording_temp.raw");
+    File file;
 
     private class PlayTask extends AsyncTask<Void, Void, Void>
     {
@@ -132,7 +134,9 @@ public class VoiceFilterFragment extends Fragment{
         sampleRateConfiguration = getArguments().getInt("sample_rate");
         channelConfiguration = getArguments().getInt("channel");
         audioEncoding = getArguments().getInt("encoding");
+        path = getArguments().getString("path");
 
+        file = new File(path, "recording_temp.raw");
 
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -380,7 +384,7 @@ public class VoiceFilterFragment extends Fragment{
                 pitch = 1f;
         }
 
-        File out = new File(Environment.getExternalStorageDirectory(), saveName + extension);
+        File out = new File(path, saveName + extension);
         byte[] audio = shortToBytes(audioData);
 
         long chunk1Size = 16; //RIFF chunk
