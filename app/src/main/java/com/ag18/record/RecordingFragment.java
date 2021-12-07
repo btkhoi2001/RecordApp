@@ -287,6 +287,9 @@ public class RecordingFragment extends Fragment {
         SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         sampleRate = sharedPreference.getInt("sample_rate", 48100);
+        String path = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
+        System.out.println("Path:" + path);
+        System.out.println("Sample rate:" + sampleRate);
     }
 
 

@@ -36,8 +36,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codekidlabs.storagechooser.StorageChooser;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -139,6 +137,7 @@ public class SettingsFragment extends Fragment {
                                                             chosenDir, Toast.LENGTH_LONG).show();
                                             path = chosenDir;
                                             preference_recording_folder.setSummary(path);
+                                            preference_recording_folder.setDefaultValue(path);
                                         }
                                     });
                     // Toggle new folder button enabling
