@@ -82,8 +82,6 @@ public class RecordingFragment extends Fragment {
 
         loadSettings();
 
-        System.out.println(sampleRate);
-
         btnRecord = view.findViewById(R.id.btn_record);
         btnCancel = view.findViewById(R.id.btn_cancel);
         btnPause = view.findViewById(R.id.btn_pause);
