@@ -19,7 +19,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/bg_main_console</item>
         <item name="colorPrimaryDark">@color/bg_main_console</item>
-        <item name="android:windowBackground">@color/stroke_button_record</item>
+        <item name="android:windowBackground">@color/bg_main_console</item>
         <item name="colorAccent">@color/teal_200</item>
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorSecondary">@color/neon</item>

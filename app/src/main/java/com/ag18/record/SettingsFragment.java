@@ -1,14 +1,9 @@
 package com.ag18.record;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -17,32 +12,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.preference.EditTextPreference;
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
 
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
 //
@@ -92,7 +73,14 @@ public class SettingsFragment extends Fragment {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             SharedPreferences.Editor editor = preferences.edit();
 
-            path = String.valueOf(Environment.getExternalStorageDirectory());
+            if(preference_recording_folder.getSummary() == "")
+            {
+                path = String.valueOf(Environment.getExternalStorageDirectory());
+            } else
+            {
+                path = preferences.getString("recording_folder", "");
+            }
+
             preference_recording_folder.setSummary(path);
             System.out.println(path);
 
@@ -101,18 +89,36 @@ public class SettingsFragment extends Fragment {
                 public boolean onPreferenceClick(Preference preference) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    View view = inflater.inflate(R.layout.about_us_dialog, null);
+                    View view = inflater.inflate(R.layout.dialog_about_us, null);
 
-                    String name[] = {"19120260 - Hoàng Trần Thiên Khôi",
-                            "19120272 - Nguyễn Sỹ Liêm",
+                    String name[] = {
+                            "19120260 - Hoàng Trần Thiên Khôi",
+                            "19120272 - Nguyễn Sĩ Liêm",
                             "19120402 - Huỳnh Nguyễn Sơn Trà",
                             "19120452 - Trần Trọng Hoàng Anh",
                             "19120549 - Bạch Thiên Khôi"};
 
+                    String github[] = {
+                            "https://github.com/thienkhoi0604",
+                            "https://github.com/ngslim",
+                            "https://github.com/gftrftrdfr",
+                            "https://github.com/hatieudao",
+                            "https://github.com/btkhoi2001"
+                    };
+
                     ListView studentList = view.findViewById(R.id.student_list);
 
-                    ArrayAdapter<String> nameArray = new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item, name);
+                    ArrayAdapter<String> nameArray = new ArrayAdapter<String>(getContext(), R.layout.line_student, name);
+
                     studentList.setAdapter(nameArray);
+
+                    studentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(github[position]));
+                            startActivity(browserIntent);
+                        }
+                    });
 
                     builder.setView(view);
 

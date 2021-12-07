@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory app:title="RECORD SETTINGS">
+    <PreferenceCategory
+        app:icon="@drawable/ic_setting_record"
+        app:title="RECORD SETTINGS">
+
         <SeekBarPreference
+            android:defaultValue="48100"
             android:max="48100"
             app:key="sample_rate"
             app:min="8600"
-            android:defaultValue="48100"
             app:seekBarIncrement="100"
             app:showSeekBarValue="true"
             app:title="Sample rate (Hz)" />
@@ -14,10 +17,12 @@
             android:key="recording_folder"
             android:title="Recording Folder" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="CREDIT">
+    <PreferenceCategory
+        android:title="CREDIT"
+        app:icon="@drawable/ic_setting_credit">
         <Preference
             android:key="about_us"
-            android:title="About us"/>
+            android:title="About us" />
     </PreferenceCategory>
 
 </PreferenceScreen>

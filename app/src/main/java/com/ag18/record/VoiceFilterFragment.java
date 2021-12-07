@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,8 +126,10 @@ public class VoiceFilterFragment extends Fragment{
         filtersList.add(new Filter("Echo", "〰"));
         filtersList.add(new Filter("Bee", "🐝"));
         filtersList.add(new Filter("Reverse", "🔁"));
+        filtersList.add(new Filter("Speaker", "🔊"));
+        filtersList.add(new Filter("Test", "🤔"));
 
-        filterAdapter = new FilterAdapter(getContext(), R.layout.filter_line, filtersList);
+        filterAdapter = new FilterAdapter(getContext(), R.layout.line_filter, filtersList);
         listView.setAdapter(filterAdapter);
 
         sampleRateConfiguration = getArguments().getInt("sample_rate");
@@ -166,6 +167,7 @@ public class VoiceFilterFragment extends Fragment{
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 selectedEffect = filtersList.get(i).getName();
@@ -237,6 +239,14 @@ public class VoiceFilterFragment extends Fragment{
                 audioData = reverseFilter(audioData);
                 pitch = 1f;
                 break;
+            case "Speaker":
+                audioData = speakerFilter(audioData);
+                pitch = 1f;
+                break;
+            case "Test":
+                audioData = testFilter(audioData);
+                pitch = 1f;
+                break;
             default:
                 pitch = 1f;
         }
@@ -285,6 +295,34 @@ public class VoiceFilterFragment extends Fragment{
         for (int i = length - 1; i >=0;  i --)
         {
             modifiedData[length - 1 - i] = data[i];
+        }
+
+        return modifiedData;
+    }
+
+    private short[] speakerFilter(short[] data)
+    {
+        int length = data.length;
+
+        short[] modifiedData = new  short[length];
+
+        for (int i = length - 1; i >=0;  i --)
+        {
+            modifiedData[i] = (short) (data[i]*2);
+        }
+
+        return modifiedData;
+    }
+
+    private short[] testFilter(short[] data)
+    {
+        int length = data.length;
+
+        short[] modifiedData = new  short[length];
+
+        for (int i = length - 1; i >=0;  i --)
+        {
+            modifiedData[i] = (short) (data[i]-3000);
         }
 
         return modifiedData;
@@ -419,15 +457,14 @@ public class VoiceFilterFragment extends Fragment{
     public void saveDialog(){
         TextView title = new TextView(getActivity());
         title.setText("Save name");
-        title.setPadding(20, 30, 20, 30);
+        title.setPadding(30, 30, 30, 30);
         title.setTextSize(20F);
-        title.setBackgroundColor(R.color.design_default_color_secondary_variant);
-        title.setTextColor(Color.WHITE);
+        title.setTextColor(Color.BLACK);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.save_dialog, null);
+        View view = inflater.inflate(R.layout.dialog_save, null);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
         String currentDateAndTime = sdf.format(new Date());

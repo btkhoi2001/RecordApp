@@ -8,5 +8,6 @@
     <ListView
         android:id="@+id/student_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="@color/bg_main_console" />
 </LinearLayout>
