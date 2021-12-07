@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -88,6 +89,9 @@ public class SettingsFragment extends Fragment {
             Preference preference_about_us = (Preference) findPreference("about_us");
             Preference preference_recording_folder = (Preference) findPreference("recording_folder");
 
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            SharedPreferences.Editor editor = preferences.edit();
+
             path = String.valueOf(Environment.getExternalStorageDirectory());
             preference_recording_folder.setSummary(path);
             System.out.println(path);
@@ -137,7 +141,9 @@ public class SettingsFragment extends Fragment {
                                                             chosenDir, Toast.LENGTH_LONG).show();
                                             path = chosenDir;
                                             preference_recording_folder.setSummary(path);
-                                            preference_recording_folder.setDefaultValue(path);
+                                            //preference_recording_folder.setDefaultValue(path);
+                                            editor.putString("recording_folder", path);
+                                            editor.apply();
                                         }
                                     });
                     // Toggle new folder button enabling

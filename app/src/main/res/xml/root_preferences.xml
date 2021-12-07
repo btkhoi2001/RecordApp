@@ -19,7 +19,7 @@
             app:title="Sample rate (Hz)" />
         <Preference
             android:key="recording_folder"
-            android:title="Recording Folder"/>
+            android:title="Recording Folder" />
     </PreferenceCategory>
     <PreferenceCategory android:title="CREDIT">
         <Preference
