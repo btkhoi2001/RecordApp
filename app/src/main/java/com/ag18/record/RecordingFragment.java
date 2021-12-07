@@ -82,6 +82,8 @@ public class RecordingFragment extends Fragment {
 
         loadSettings();
 
+        System.out.println(sampleRate);
+
         btnRecord = view.findViewById(R.id.btn_record);
         btnCancel = view.findViewById(R.id.btn_cancel);
         btnPause = view.findViewById(R.id.btn_pause);
@@ -99,7 +101,7 @@ public class RecordingFragment extends Fragment {
                     chronometer.start();
                     btnPause.setVisibility(View.VISIBLE);
                     btnResume.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "Recording Started", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Recording Started", Toast.LENGTH_SHORT).show();
                     btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
                     new Thread( (Runnable) () ->
                     {
@@ -114,7 +116,7 @@ public class RecordingFragment extends Fragment {
                     chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                     timeWhenStopped = 0;
                     chronometer.stop();
-                    Toast.makeText(getActivity(), "Recording Finished", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Recording Finished", Toast.LENGTH_SHORT).show();
                     btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24));
                     btnPause.setVisibility(View.GONE);
                     btnResume.setVisibility(View.GONE);
@@ -132,7 +134,7 @@ public class RecordingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 stopRecording(false);
-                Toast.makeText(getActivity(), "Recording Paused", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Recording Paused", Toast.LENGTH_SHORT).show();
                 timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
                 chronometer.stop();
                 btnResume.setVisibility(View.VISIBLE);
@@ -145,7 +147,7 @@ public class RecordingFragment extends Fragment {
             public void onClick(View view) {
                 try {
                     startRecording(true);
-                    Toast.makeText(getActivity(), "Recording Resumed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Recording Resumed", Toast.LENGTH_SHORT).show();
                     btnPause.setVisibility(View.VISIBLE);
                     btnResume.setVisibility(View.GONE);
                 } catch (IOException e) {
@@ -157,7 +159,8 @@ public class RecordingFragment extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Cancel", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Cancel", Toast.LENGTH_SHORT).show();
+                btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24));
                 btnPause.setVisibility(View.GONE);
                 btnResume.setVisibility(View.GONE);
                 stopRecording(true);

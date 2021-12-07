@@ -19,11 +19,8 @@
             app:title="Sample rate (Hz)" />
     </PreferenceCategory>
     <PreferenceCategory android:title="CREDIT">
-        <ListPreference
-            android:dialogMessage="&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten&#xA;&#xA;MSSV - Hoten"
-            android:entries="@array/reply_entries"
-            android:entryValues="@array/reply_values"
-            android:key="credit"
+        <Preference
+            android:key="about_us"
             android:title="About us"/>
     </PreferenceCategory>
 
