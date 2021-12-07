@@ -126,8 +126,7 @@ public class VoiceFilterFragment extends Fragment{
         filtersList.add(new Filter("Echo", "〰"));
         filtersList.add(new Filter("Bee", "🐝"));
         filtersList.add(new Filter("Reverse", "🔁"));
-        filtersList.add(new Filter("Speaker", "🔊"));
-        filtersList.add(new Filter("Test", "🤔"));
+
 
         filterAdapter = new FilterAdapter(getContext(), R.layout.line_filter, filtersList);
         listView.setAdapter(filterAdapter);
