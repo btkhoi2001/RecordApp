@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import com.gauravk.audiovisualizer.visualizer.BarVisualizer;
 
 public class FolderFragment extends Fragment implements RecodingAdapter.onItemListClick {
 
@@ -43,26 +44,32 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
 
     private RecodingAdapter recodingAdapter;
 
-    private MediaPlayer mediaPlayer = null;
+    static MediaPlayer mediaPlayer;
     private boolean isPlaying = false;
 
     private File fileToPlay = null;
 
     //UI Elements
-    private ImageButton playBtn;
+    private ImageButton playBtn, btnForwardLeft, btnForwardRight;
     private TextView playerHeader;
     private TextView playerFilename;
 
     private SeekBar playerSeekbar;
     private Handler seekbarHandler;
     private Runnable updateSeekbar;
-
+    BarVisualizer visualizer;
     private String path = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
 
     public FolderFragment() {
         // Required empty public constructor
     }
-
+    @Override
+    public void onDestroy() {
+        if (visualizer != null){
+            visualizer.release();
+        }
+        super.onDestroy();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,13 +85,14 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         playerSheet = view.findViewById(R.id.player_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(playerSheet);
         recordList = view.findViewById(R.id.audio_list_view);
-
+        visualizer = view.findViewById(R.id.blast);
         playBtn = view.findViewById(R.id.play_btn);
         playerHeader = view.findViewById(R.id.player_header_title);
         playerFilename = view.findViewById(R.id.player_filename);
 
         playerSeekbar = view.findViewById(R.id.player_seekbar);
-
+        btnForwardLeft = view.findViewById(R.id.btnForwadLeft);
+        btnForwardRight = view.findViewById(R.id.btnForwadRight);
         File directory = new File(path);
         allFiles = directory.listFiles(new FileFilter() {
             @Override
@@ -136,7 +144,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         playerSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
             }
 
             @Override
@@ -151,7 +158,26 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
                 resumeAudio();
             }
         });
-
+        btnForwardRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mediaPlayer.isPlaying()){
+                    final int newTime = mediaPlayer.getCurrentPosition()+5000;
+                    playerSeekbar.setProgress(newTime);
+                    mediaPlayer.seekTo(newTime);
+                }
+            }
+        });
+        btnForwardLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mediaPlayer.isPlaying()){
+                    final int newTime = (mediaPlayer.getCurrentPosition()-5000 < 0) ? 0 : mediaPlayer.getCurrentPosition()-5000 ;
+                    playerSeekbar.setProgress(newTime);
+                    mediaPlayer.seekTo(newTime);
+                }
+            }
+        });
     }
 
     @Override
@@ -192,7 +218,10 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     }
 
     private void playAudio(File fileToPlay) {
-
+        if(mediaPlayer != null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
         mediaPlayer = new MediaPlayer();
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         try {
@@ -221,6 +250,11 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         updateRunnable();
         seekbarHandler.postDelayed(updateSeekbar, 0);
 
+        int audioSessionId = mediaPlayer.getAudioSessionId();
+        if(audioSessionId != -1){
+            visualizer.setAudioSessionId(audioSessionId);
+        }
+
     }
 
     private void updateRunnable() {
@@ -240,4 +274,5 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
             stopAudio();
         }
     }
+
 }

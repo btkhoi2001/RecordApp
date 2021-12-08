@@ -75,43 +75,50 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/player_filename"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/player_filename">
+
         <ImageButton
-            android:background="@android:color/transparent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_baseline_share_24"/>
-        <ImageButton
             android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_share_24" />
+
+        <ImageButton
+            android:id="@+id/btnForwadLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_baseline_replay_24"/>
-        <ImageButton
             android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_replay_24" />
+
+        <ImageButton
             android:id="@+id/play_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_baseline_play_arrow_24"/>
-        <ImageButton
             android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_play_arrow_24" />
+
+        <ImageButton
+            android:id="@+id/btnForwadRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_baseline_forward_24"/>
-        <ImageButton
             android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_forward_24" />
+
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_baseline_more_horiz_24"/>
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_more_horiz_24" />
 
     </LinearLayout>
 
@@ -127,5 +134,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/player_filename" />
+
+    <com.gauravk.audiovisualizer.visualizer.BarVisualizer
+        android:id="@+id/blast"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        app:avColor="@color/white"
+        app:avDensity="0.5"
+        app:avSpeed="normal"
+        app:avType="outline"
+        app:avWidth="4dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toBottomOf="@+id/player_seekbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

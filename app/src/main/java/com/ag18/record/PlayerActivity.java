@@ -83,6 +83,7 @@ public class PlayerActivity extends AppCompatActivity {
         String rcdName = i.getStringExtra("recordingName");
         position = bundle.getInt("pos", 0);
         txtRecordingName.setSelected(true);
+
         Uri uri = Uri.parse(myRecordings.get(position).toString());
         recordingName = myRecordings.get(position).getName();
         txtRecordingName.setText(recordingName);
