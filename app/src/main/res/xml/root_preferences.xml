@@ -5,14 +5,13 @@
         app:icon="@drawable/ic_setting_record"
         app:title="RECORD SETTINGS">
 
-        <SeekBarPreference
-            android:defaultValue="48100"
-            android:max="48100"
+        <ListPreference
+            android:defaultValue="44100"
+            android:entries="@array/sample_rate_entries"
+            android:entryValues="@array/sample_rate_values"
             app:key="sample_rate"
-            app:min="8600"
-            app:seekBarIncrement="100"
-            app:showSeekBarValue="true"
-            app:title="Sample rate (Hz)" />
+            app:title="Sample rate"
+            app:useSimpleSummaryProvider="true" />
         <Preference
             android:key="recording_folder"
             android:title="Recording Folder" />
