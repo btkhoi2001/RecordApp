@@ -7,17 +7,20 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="neon">#08eeff</color>
 
     <color name="bg_main_console">#FF192133</color>
     <color name="stroke_button_record">#FF212841</color>
     <color name="button_delete">#FF6B3F48</color>
     <color name="pause_button">#FF0F1420</color>
     <color name="sub_console_record">#FF172032</color>
-
     <color name="colorPink">#F3716C</color>
     <color name="colorTextDark">#636363</color>
     <color name="colorTextGrey">#66484848</color>
     <color name="colorButtonDark">#4B4B4B</color>
     <color name="colorButtonGrey">#424242</color>
-
+    <color name="dark_theme_title">#FFFFFFFF</color>
+    <color name="dark_theme_desc">#FFD5CCCC</color>
+    <color name="dark_theme_icon_playback">#FFFFFFFF</color>
+    <color name="gray">#6C6C6C</color>
 </resources>
