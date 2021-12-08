@@ -84,12 +84,6 @@ public class VoiceEditorFragment extends Fragment {
         tvFileName.setText(file.getName());
         undo.push(filePath);
 
-        String tmpDir = externalStorage + "/.temp";
-        File hiddenTmpDir = new File(tmpDir);
-
-        if (!hiddenTmpDir.exists())
-            hiddenTmpDir.mkdir();
-
         preparedMediaPlayer();
         setListener();
 

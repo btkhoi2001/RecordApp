@@ -24,10 +24,12 @@ import android.widget.TextView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class FolderFragment extends Fragment implements RecodingAdapter.onItemListClick {
 
@@ -55,6 +57,8 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     private Handler seekbarHandler;
     private Runnable updateSeekbar;
 
+    private String path = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+
     public FolderFragment() {
         // Required empty public constructor
     }
@@ -81,9 +85,20 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
 
         playerSeekbar = view.findViewById(R.id.player_seekbar);
 
-        String path = getActivity().getExternalFilesDir("/").getAbsolutePath();
         File directory = new File(path);
-        allFiles = directory.listFiles();
+        allFiles = directory.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                String extensions[] = {".wav", ".mp3", ".mp4", ".3gp"};
+                String name = file.getName().toLowerCase();
+
+                for (String extension : extensions)
+                    if (name.endsWith(extension) && file.isFile())
+                        return true;
+
+                return false;
+            }
+        });
 
         recodingAdapter = new RecodingAdapter(getContext(), view, allFiles, this);
 

@@ -55,6 +55,7 @@
         tools:layout="@layout/fragment_recording" >
         <action
             android:id="@+id/action_recordingFragment_to_voiceFilterFragment"
-            app:destination="@id/voiceFilterFragment" />
+            app:destination="@id/voiceFilterFragment"
+            app:popUpTo="@id/recordFragment" />
     </fragment>
 </navigation>

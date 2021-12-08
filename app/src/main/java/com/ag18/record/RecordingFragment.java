@@ -2,12 +2,17 @@ package com.ag18.record;
 
 import android.Manifest;
 import android.content.SharedPreferences;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -15,9 +20,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
+
+
 
 import android.os.Environment;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,29 +50,25 @@ import java.io.OutputStream;
 
 
 public class RecordingFragment extends Fragment {
-    private ImageButton btnRecord;
-    private ImageButton btnPause;
-    private ImageButton btnResume;
+    private ImageButton btnStop, btnPause;
     private Button btnCancel;
-    private AudioRecord audioRecord = null;
-    private Thread recordingThread = null;
 
     private Chronometer chronometer;
+    private NavController navController;
 
-    private boolean isRecording = false;
-    private boolean isPause = false;
-    private int PERMISSION_CODE = 21;
+    boolean isRecording = true;
+    private AudioRecord audioRecord = null;
     private int minBufferSize = 0;
-    private long timeWhenStopped = 0;
+    private Thread recordingThread = null;
 
-    private String path;
-
-
-    NavController navController;
+    private View view = null;
+    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
 
     int sampleRate = 44100;
     int channelConfiguration = 2;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+
+    private long timeWhenStopped = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,9 +78,8 @@ public class RecordingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        LinearLayout layout_recording = (LinearLayout) inflater.inflate(R.layout.fragment_recording, container, false);
-        return layout_recording;
+        view = inflater.inflate(R.layout.fragment_recording, container, false);
+        return view;
     }
 
     @Override
@@ -84,105 +88,68 @@ public class RecordingFragment extends Fragment {
 
         loadSettings();
 
-        btnRecord = view.findViewById(R.id.btn_record);
-        btnCancel = view.findViewById(R.id.btn_cancel);
+        try {
+            org.apache.commons.io.FileUtils.cleanDirectory(new File(externalStorage + "/.temp"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        btnStop = view.findViewById(R.id.btn_stop);
         btnPause = view.findViewById(R.id.btn_pause);
-        btnResume = view.findViewById(R.id.btn_resume);
+        btnCancel = view.findViewById(R.id.btn_cancel);
 
         chronometer = view.findViewById(R.id.chronometer);
-
         navController = Navigation.findNavController(view);
 
-        btnRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!isRecording) {
-                    chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                    chronometer.start();
-                    btnPause.setVisibility(View.VISIBLE);
-                    btnResume.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "Recording Started", Toast.LENGTH_SHORT).show();
-                    btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_stop_24));
-                    new Thread( (Runnable) () ->
-                    {
-                        try {
-                            startRecording(false);
-                        } catch (IOException e) {
-                            isRecording = false;
-                            e.printStackTrace();
-                        }
-                    }).start();
-                } else {
-                    chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                    timeWhenStopped = 0;
-                    chronometer.stop();
-                    Toast.makeText(getActivity(), "Recording Finished", Toast.LENGTH_SHORT).show();
-                    btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24));
-                    btnPause.setVisibility(View.GONE);
-                    btnResume.setVisibility(View.GONE);
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("sample_rate", sampleRate);
-                    bundle.putInt("channel", channelConfiguration);
-                    bundle.putInt("encoding", audioEncoding);
-                    bundle.putString("path", path);
-                    stopRecording(false);
-                    navController.navigate(R.id.action_recordingFragment_to_voiceFilterFragment, bundle);
-                }
-            }
-        });
+        setListener();
+        startRecording(false);
+    }
 
+    private void setListener() {
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopRecording(false);
-                Toast.makeText(getActivity(), "Recording Paused", Toast.LENGTH_SHORT).show();
-                timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
-                chronometer.stop();
-                btnResume.setVisibility(View.VISIBLE);
-                btnPause.setVisibility(View.GONE);
+                if (isRecording) {
+                    stopRecording(false);
+                    btnPause.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                }
+                else {
+                    startRecording(true);
+                    btnPause.setImageResource(R.drawable.ic_pause);
+                }
             }
         });
 
-        btnResume.setOnClickListener(new View.OnClickListener() {
+        btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    startRecording(true);
-                    Toast.makeText(getActivity(), "Recording Resumed", Toast.LENGTH_SHORT).show();
-                    btnPause.setVisibility(View.VISIBLE);
-                    btnResume.setVisibility(View.GONE);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                stopRecording(true);
             }
         });
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Cancel", Toast.LENGTH_SHORT).show();
-                btnRecord.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24));
-                btnPause.setVisibility(View.GONE);
-                btnResume.setVisibility(View.GONE);
-                stopRecording(true);
+                Navigation.findNavController(view).popBackStack();
             }
         });
     }
 
-    private void startRecording(final boolean b) throws IOException {
-        //btnPause.setVisibility(View.VISIBLE);
-
+    private void startRecording(final boolean b) {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            new Thread( (Runnable) () ->
-            {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_CODE);
-            }).start();
+            Navigation.findNavController(view).popBackStack();
+            return;
         }
+
+        chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+        chronometer.start();
+
         minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfiguration, audioEncoding);
 
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfiguration, audioEncoding, minBufferSize);
         audioRecord.startRecording();
         isRecording = true;
+
         recordingThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -192,16 +159,45 @@ public class RecordingFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-        }, "AudioRecorder Thread");
+        });
+
         recordingThread.start();
     }
 
-    private void writeAudioDataToFile(boolean b) throws IOException {
-        byte data[] = new byte[minBufferSize];
-        String filename = getTempFilename();
-//        FileOutputStream os = null;
+    private void stopRecording(boolean b) {
+        if (audioRecord != null) {
+            chronometer.stop();
+            timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
 
-        //File myFile = new File(Environment.getExternalStorageDirectory(), "temp.pcm");
+            isRecording = false;
+
+            audioRecord.stop();
+            audioRecord.release();
+
+            audioRecord = null;
+            recordingThread = null;
+        }
+
+        if (b) {
+            navController.navigate(R.id.action_recordingFragment_to_voiceFilterFragment);
+        }
+    }
+
+    private String getTempFilename() {
+        File file = new File(externalStorage + "/.temp/recording_temp.raw");
+
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return (file.getAbsolutePath());
+    }
+
+    private void writeAudioDataToFile(boolean b) throws IOException {
+        String filename = getTempFilename();
+
         File myFile = new File(filename);
         myFile.createNewFile();
         OutputStream outputStream = new FileOutputStream(myFile, b);
@@ -217,6 +213,7 @@ public class RecordingFragment extends Fragment {
                 dataOutputStream.writeShort(audioData[i]);
             }
         }
+
         try {
             outputStream.close();
             bufferedOutputStream.close();
@@ -224,107 +221,12 @@ public class RecordingFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//        try {
-//            os = new FileOutputStream(filename, b);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        int read = 0;
-//
-//        if (os != null) {
-//                read = audioRecord.read(data, 0, minBufferSize);
-//
-//                if (AudioRecord.ERROR_INVALID_OPERATION != read) {
-//                    try {
-//                        os.write(data);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//
-//        try {
-//            os.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    private String getTempFilename() {
-        //String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
-        File file = new File(path + "/recording_temp.raw");
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return (file.getAbsolutePath());
-    }
-
-    private void stopRecording(boolean b) {
-        if (audioRecord != null) {
-            isRecording = false;
-
-            audioRecord.stop();
-            audioRecord.release();
-
-            audioRecord = null;
-            recordingThread = null;
-        }
-
-        if (b == true) {
-            deleteTempFile();
-            chronometer.setBase(SystemClock.elapsedRealtime());
-            timeWhenStopped = 0;
-            chronometer.stop();
-        }
-    }
-
-    private void deleteTempFile() {
-        File file = new File(getTempFilename());
-        file.delete();
     }
 
     private void loadSettings()
     {
         SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
         sampleRate = Integer.parseInt(sharedPreference.getString("sample_rate", "44100"));
-        path = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
-        System.out.println("Path:" + path);
-        System.out.println("Sample rate:" + sampleRate);
+        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
     }
-
-
-
-
-//    private void startRecord() throws IOException {
-//        File myFile = new File(Environment.getExternalStorageDirectory(), "temp.pcm");
-//        myFile.createNewFile();
-//        OutputStream outputStream = new FileOutputStream(myFile);
-//        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-//        DataOutputStream dataOutputStream = new DataOutputStream(bufferedOutputStream);
-//
-//        int minBufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
-//        short[] audioData = new short[minBufferSize];
-//
-//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_CODE);
-//        }
-//        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, minBufferSize);
-//        audioRecord.startRecording();
-//
-//        while (isRecording) {
-//            int numShortsRead = audioRecord.read(audioData, 0, minBufferSize);
-//            for (int i = 0; i < numShortsRead; i++)
-//            {
-//                dataOutputStream.writeShort(audioData[i]);
-//            }
-//        }
-//        if(!isRecording) {
-//            audioRecord.stop();
-//            dataOutputStream.close();
-//        }
-//    }
 }

@@ -1,28 +1,29 @@
 package com.ag18.record;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.graphics.Color;
+import android.media.AudioFormat;
 import android.media.AudioTrack;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
+import android.os.Environment;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -32,21 +33,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
-
-public class VoiceFilterFragment extends Fragment{
-    private ImageButton ibPlay, ibSave, ibStop;
-    private TextView tvFileName;
+public class VoiceFilterFragment extends Fragment {
+    private ImageButton ibPlay, ibSave;
     private AudioTrack audioTrack;
     private View view;
 
-    int sampleRateConfiguration;
-    int channelConfiguration;
-    int audioEncoding;
+    int frequency = 44100;
+    int channelConfiguration = 2;
+    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
     private ListView listView;
     ArrayList<Filter> filtersList;
@@ -55,49 +51,8 @@ public class VoiceFilterFragment extends Fragment{
     float pitch = 1f;
     String selectedEffect = "None";
 
-    String saveName = "test";
-    String extension = ".wav";
-
-    String path;
-
-    NavController navController;
-
-    PlayTask playTask;
-
-    File file;
-
-    private class PlayTask extends AsyncTask<Void, Void, Void>
-    {
-        @Override
-        protected void onPreExecute()
-        {
-            ibPlay.setVisibility(View.GONE);
-            ibStop.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            double playTime = 0;
-            try {
-                playTime = playRecord();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                Thread.sleep((long) (playTime*1000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void v)
-        {
-            ibPlay.setVisibility(View.VISIBLE);
-            ibStop.setVisibility(View.GONE);
-        }
-    }
+    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+    File file = new File(externalStorage + "/.temp/recording_temp.raw");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,12 +64,7 @@ public class VoiceFilterFragment extends Fragment{
         view = inflater.inflate(R.layout.fragment_voice_filter, container, false);
 
         ibPlay = view.findViewById(R.id.ib_play_test);
-        ibSave = view.findViewById(R.id.ib_save);
-        ibStop = view.findViewById(R.id.ib_stop_test);
-
-        tvFileName = view.findViewById(R.id.tv_file_name);
-
-        tvFileName.setText("Tune up your record");
+        ibSave = view.findViewById(R.id.ib_save_file);
 
         listView = view.findViewById(R.id.filter_list);
 
@@ -127,59 +77,82 @@ public class VoiceFilterFragment extends Fragment{
         filtersList.add(new Filter("Bee", "🐝"));
         filtersList.add(new Filter("Reverse", "🔁"));
 
-
         filterAdapter = new FilterAdapter(getContext(), R.layout.line_filter, filtersList);
         listView.setAdapter(filterAdapter);
 
-        sampleRateConfiguration = getArguments().getInt("sample_rate");
-        channelConfiguration = getArguments().getInt("channel");
-        audioEncoding = getArguments().getInt("encoding");
-        path = getArguments().getString("path");
+        setListener();
 
-        file = new File(path, "recording_temp.raw");
+        return view;
+    }
 
+    void setListener() {
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playTask = new PlayTask();
-                playTask.execute();
-            }
-        });
-
-        ibStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ibPlay.setVisibility(View.VISIBLE);
-                ibStop.setVisibility(View.GONE);
-                audioTrack.stop();
-                audioTrack.flush();
-                audioTrack.release();
-                playTask.cancel(true);
+                try {
+                    playRecord();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         ibSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveDialog();
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+                LinearLayout linearLayout = new LinearLayout(getActivity());
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams.setMargins(50, 0, 50, 100);
+
+                EditText input = new EditText(getActivity());
+                input.setGravity(Gravity.TOP | Gravity.START);
+                input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+
+                linearLayout.addView(input, layoutParams);
+
+                alert.setMessage("Name");
+                alert.setTitle("Save record");
+                alert.setView(linearLayout);
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String prefix = input.getText().toString();
+
+                        try {
+                            saveRecord(externalStorage + "/" + prefix + ".wav");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        NavController navController = Navigation.findNavController(view);
+                        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.recordFragment, true).build();
+                        navController.navigate(R.id.action_voiceFilterFragment_to_recordFragment, null, navOptions);
+
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                alert.show();
             }
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @SuppressLint("ResourceAsColor")
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 selectedEffect = filtersList.get(i).getName();
             }
         });
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
     }
 
     private short[] readData() throws IOException {
@@ -203,8 +176,7 @@ public class VoiceFilterFragment extends Fragment{
         return data;
     }
 
-    @SuppressLint("ResourceAsColor")
-    private double playRecord() throws IOException {
+    private void playRecord() throws IOException {
         int shortSizeInBytes = Short.SIZE / Byte.SIZE;
         int bufferSizeInBytes = (int) (file.length() / shortSizeInBytes);
 
@@ -238,23 +210,13 @@ public class VoiceFilterFragment extends Fragment{
                 audioData = reverseFilter(audioData);
                 pitch = 1f;
                 break;
-            case "Speaker":
-                audioData = speakerFilter(audioData);
-                pitch = 1f;
-                break;
-            case "Test":
-                audioData = testFilter(audioData);
-                pitch = 1f;
-                break;
             default:
                 pitch = 1f;
         }
 
-        audioTrack = new AudioTrack(3, (int) (sampleRateConfiguration *pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
+        audioTrack = new AudioTrack(3, (int) (frequency*pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
         audioTrack.play();
         audioTrack.write(audioData, 0, bufferSizeInBytes);
-
-        return audioData.length / (sampleRateConfiguration * pitch);
     }
 
     private short[] echoFilter(short[] data, int numDelay, float decay)
@@ -299,34 +261,6 @@ public class VoiceFilterFragment extends Fragment{
         return modifiedData;
     }
 
-    private short[] speakerFilter(short[] data)
-    {
-        int length = data.length;
-
-        short[] modifiedData = new  short[length];
-
-        for (int i = length - 1; i >=0;  i --)
-        {
-            modifiedData[i] = (short) (data[i]*2);
-        }
-
-        return modifiedData;
-    }
-
-    private short[] testFilter(short[] data)
-    {
-        int length = data.length;
-
-        short[] modifiedData = new  short[length];
-
-        for (int i = length - 1; i >=0;  i --)
-        {
-            modifiedData[i] = (short) (data[i]-3000);
-        }
-
-        return modifiedData;
-    }
-
     private byte[] shortToBytes(@NonNull short[] shortArray) {
         int shortArrSize = shortArray.length;
         byte[] bytes = new byte[shortArrSize * 2];
@@ -339,8 +273,7 @@ public class VoiceFilterFragment extends Fragment{
         return bytes;
     }
 
-    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {
-        byte[] header = new byte[44];
+    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {        byte[] header = new byte[44];
         header[0] = 'R'; // RIFF/WAVE header
         header[1] = 'I';
         header[2] = 'F';
@@ -389,7 +322,7 @@ public class VoiceFilterFragment extends Fragment{
         return header;
     }
 
-    private void saveRecord() throws IOException {
+    private void saveRecord(String filePath) throws IOException {
         short[] audioData = readData();
 
         switch (selectedEffect)
@@ -421,14 +354,14 @@ public class VoiceFilterFragment extends Fragment{
                 pitch = 1f;
         }
 
-        File out = new File(path, saveName + extension);
+        File out = new File(filePath);
         byte[] audio = shortToBytes(audioData);
 
         long chunk1Size = 16; //RIFF chunk
         byte bitsPerSample = 16; //ENCODING-16-BITS
         int format = 1; //PCM
         int channels = channelConfiguration;
-        int sampleRate = (int) (sampleRateConfiguration / 2 * pitch);
+        int sampleRate = (int) (frequency / 2 * pitch);
         long byteRate = (long) sampleRate * channels * bitsPerSample/8;
         int blockAlign = (int) (channels * bitsPerSample/8);
 
@@ -452,46 +385,15 @@ public class VoiceFilterFragment extends Fragment{
         outputStream.close();
     }
 
-    @SuppressLint("ResourceAsColor")
-    public void saveDialog(){
-        TextView title = new TextView(getActivity());
-        title.setText("Save name");
-        title.setPadding(30, 30, 30, 30);
-        title.setTextSize(20F);
-        title.setTextColor(Color.BLACK);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_save, null);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
-        String currentDateAndTime = sdf.format(new Date());
-
-        EditText fileName = (EditText) view.findViewById(R.id.saveName);
-        fileName.setText("Recording_" + currentDateAndTime);
-
-        builder.setView(view).setCustomTitle(title).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                saveName = fileName.getText().toString();
-                try {
-                    saveRecord();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(getActivity(), "Saved file", Toast.LENGTH_SHORT).show();
-                navController.navigate(R.id.action_voiceFilterFragment_to_recordFragment);
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
+        try {
+            org.apache.commons.io.FileUtils.cleanDirectory(new File(externalStorage + "/.temp"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
