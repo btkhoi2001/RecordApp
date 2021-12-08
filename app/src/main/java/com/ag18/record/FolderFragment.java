@@ -45,7 +45,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     private RecodingAdapter recodingAdapter;
 
     static MediaPlayer mediaPlayer;
-    private boolean isPlaying = false;
 
     private File fileToPlay = null;
 
@@ -131,7 +130,7 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isPlaying){
+                if(mediaPlayer.isPlaying()){
                     pauseAudio();
                 } else {
                     if(fileToPlay != null){
@@ -183,7 +182,7 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     @Override
     public void onClickListener(File file, int position) {
         fileToPlay = file;
-        if(isPlaying){
+        if(mediaPlayer !=null && mediaPlayer.isPlaying()){
             stopAudio();
             playAudio(fileToPlay);
         } else {
@@ -194,15 +193,12 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     private void pauseAudio() {
         mediaPlayer.pause();
         playBtn.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24, null));
-        isPlaying = false;
         seekbarHandler.removeCallbacks(updateSeekbar);
     }
 
     private void resumeAudio() {
         mediaPlayer.start();
         playBtn.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_pause, null));
-        isPlaying = true;
-
         updateRunnable();
         seekbarHandler.postDelayed(updateSeekbar, 0);
 
@@ -212,7 +208,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         //Stop The Audio
         playBtn.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24, null));
         playerHeader.setText("Stopped");
-        isPlaying = false;
         mediaPlayer.stop();
         seekbarHandler.removeCallbacks(updateSeekbar);
     }
@@ -235,7 +230,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         playerFilename.setText(fileToPlay.getName());
         playerHeader.setText("Playing");
         //Play the audio
-        isPlaying = true;
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -270,7 +264,7 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     @Override
     public void onStop() {
         super.onStop();
-        if(isPlaying) {
+        if(mediaPlayer.isPlaying()) {
             stopAudio();
         }
     }
