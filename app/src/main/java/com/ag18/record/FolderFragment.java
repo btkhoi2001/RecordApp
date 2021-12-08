@@ -1,6 +1,8 @@
 package com.ag18.record;
 
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +18,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -44,18 +47,19 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
 
     private RecodingAdapter recodingAdapter;
 
-    static MediaPlayer mediaPlayer;
+    static MediaPlayer mediaPlayer = null;
 
     private File fileToPlay = null;
-
+    int current = 0;
     //UI Elements
-    private ImageButton playBtn, btnForwardLeft, btnForwardRight;
+    private Button btnPlay, btnForwardLeft, btnForwardRight, btnNext, btnPrevious;
     private TextView playerHeader;
     private TextView playerFilename;
 
-    private SeekBar playerSeekbar;
+    private SeekBar seekbar;
     private Handler seekbarHandler;
     private Runnable updateSeekbar;
+    boolean isShouldSetDataSource = true;
     BarVisualizer visualizer;
     private String path = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
 
@@ -85,13 +89,18 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         bottomSheetBehavior = BottomSheetBehavior.from(playerSheet);
         recordList = view.findViewById(R.id.audio_list_view);
         visualizer = view.findViewById(R.id.blast);
-        playBtn = view.findViewById(R.id.play_btn);
+        btnPlay = view.findViewById(R.id.btnPlay);
         playerHeader = view.findViewById(R.id.player_header_title);
         playerFilename = view.findViewById(R.id.player_filename);
 
-        playerSeekbar = view.findViewById(R.id.player_seekbar);
+        seekbar = view.findViewById(R.id.player_seekbar);
         btnForwardLeft = view.findViewById(R.id.btnForwadLeft);
         btnForwardRight = view.findViewById(R.id.btnForwadRight);
+        btnNext = view.findViewById(R.id.btnNext);
+        btnPrevious = view.findViewById(R.id.btnPrevious);
+
+        mediaPlayer = new MediaPlayer();
+
         File directory = new File(path);
         allFiles = directory.listFiles(new FileFilter() {
             @Override
@@ -127,42 +136,58 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
             }
         });
 
-        playBtn.setOnClickListener(new View.OnClickListener() {
+        btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+                System.out.println(mediaPlayer);
                 if(mediaPlayer.isPlaying()){
-                    pauseAudio();
-                } else {
-                    if(fileToPlay != null){
-                        resumeAudio();
+                        pauseAudio();
+                }
+                else{
+                    playAudio();
+                    int audioSessionId = mediaPlayer.getAudioSessionId();
+                    if(audioSessionId != -1){
+                        visualizer.setAudioSessionId(audioSessionId);
                     }
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            System.out.println("finish");
+                            btnPlay.setBackgroundResource(R.drawable.ic_play);
+                            seekbar.setProgress(0);
+                            mediaPlayer.stop();
+                            mediaPlayer.reset();
+                            seekbarHandler.removeCallbacks(updateSeekbar);
+                            isShouldSetDataSource = true;
+                        }
+                    });
                 }
             }
         });
 
-        playerSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                pauseAudio();
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                int progress = seekBar.getProgress();
-                mediaPlayer.seekTo(progress);
-                resumeAudio();
+            public void onClick(View view) {
+                int next = (current+1) % allFiles.length;
+                onClickListener(allFiles[next], next);
             }
         });
+        btnPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int pre = (current - 1 + allFiles.length ) % allFiles.length;
+                onClickListener(allFiles[pre], pre);
+            }
+        });
+
+
+
         btnForwardRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mediaPlayer.isPlaying()){
                     final int newTime = mediaPlayer.getCurrentPosition()+5000;
-                    playerSeekbar.setProgress(newTime);
+                    seekbar.setProgress(newTime);
                     mediaPlayer.seekTo(newTime);
                 }
             }
@@ -172,101 +197,97 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
             public void onClick(View view) {
                 if(mediaPlayer.isPlaying()){
                     final int newTime = (mediaPlayer.getCurrentPosition()-5000 < 0) ? 0 : mediaPlayer.getCurrentPosition()-5000 ;
-                    playerSeekbar.setProgress(newTime);
+                    seekbar.setProgress(newTime);
                     mediaPlayer.seekTo(newTime);
                 }
             }
         });
+
+
     }
 
     @Override
     public void onClickListener(File file, int position) {
         fileToPlay = file;
-        if(mediaPlayer !=null && mediaPlayer.isPlaying()){
-            stopAudio();
-            playAudio(fileToPlay);
-        } else {
-            playAudio(fileToPlay);
+        current = position;
+        System.out.println(position);
+        if(mediaPlayer != null ){
+            if(mediaPlayer.isPlaying())
+                mediaPlayer.stop();
         }
-    }
-
-    private void pauseAudio() {
-        mediaPlayer.pause();
-        playBtn.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24, null));
-        seekbarHandler.removeCallbacks(updateSeekbar);
-    }
-
-    private void resumeAudio() {
-        mediaPlayer.start();
-        playBtn.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_pause, null));
-        updateRunnable();
-        seekbarHandler.postDelayed(updateSeekbar, 0);
-
-    }
-
-    private void stopAudio() {
-        //Stop The Audio
-        playBtn.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24, null));
-        playerHeader.setText("Stopped");
-        mediaPlayer.stop();
-        seekbarHandler.removeCallbacks(updateSeekbar);
-    }
-
-    private void playAudio(File fileToPlay) {
-        if(mediaPlayer != null){
-            mediaPlayer.stop();
-            mediaPlayer.release();
+        else{
+            mediaPlayer = new MediaPlayer();
         }
-        mediaPlayer = new MediaPlayer();
+        if(mediaPlayer.isPlaying() || mediaPlayer.getCurrentPosition() > 0){
+            seekbarHandler.removeCallbacks(updateSeekbar);
+        }
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        playerFilename.setText(fileToPlay.getName());
         try {
+            mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(fileToPlay.getAbsolutePath());
             mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
+            btnPlay.setBackgroundResource(R.drawable.ic_play);
+            seekbar.setProgress(0);
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
-        playBtn.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_pause, null));
-        playerFilename.setText(fileToPlay.getName());
-        playerHeader.setText("Playing");
-        //Play the audio
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+    }
+    private void pauseAudio(){
+        btnPlay.setBackgroundResource(R.drawable.ic_play);
+        mediaPlayer.pause();
+        seekbarHandler.removeCallbacks(updateSeekbar);
+    }
+    private void playAudio(){
+        if (isShouldSetDataSource){
+            isShouldSetDataSource = false;
+            try {
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setDataSource(fileToPlay.getAbsolutePath());
+                mediaPlayer.prepare();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        btnPlay.setBackgroundResource(R.drawable.ic_pause_circle);
+        mediaPlayer.start();
+        seekbar.setMax(mediaPlayer.getDuration());
+        seekbar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPink),
+                PorterDuff.Mode.MULTIPLY);
+        seekbar.getThumb().setColorFilter(getResources().getColor(R.color.colorPink), PorterDuff.Mode.SRC_IN);
+
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onCompletion(MediaPlayer mp) {
-                stopAudio();
-                playerHeader.setText("Finished");
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mediaPlayer.seekTo(seekBar.getProgress());
             }
         });
-
-        playerSeekbar.setMax(mediaPlayer.getDuration());
-
+        playerFilename.setText(fileToPlay.getName());
+        playerHeader.setText("Playing");
         seekbarHandler = new Handler();
         updateRunnable();
         seekbarHandler.postDelayed(updateSeekbar, 0);
 
-        int audioSessionId = mediaPlayer.getAudioSessionId();
-        if(audioSessionId != -1){
-            visualizer.setAudioSessionId(audioSessionId);
-        }
-
     }
-
     private void updateRunnable() {
         updateSeekbar = new Runnable() {
             @Override
             public void run() {
-                playerSeekbar.setProgress(mediaPlayer.getCurrentPosition());
+                seekbar.setProgress(mediaPlayer.getCurrentPosition());
                 seekbarHandler.postDelayed(this, 500);
             }
         };
     }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if(mediaPlayer.isPlaying()) {
-            stopAudio();
-        }
-    }
-
 }

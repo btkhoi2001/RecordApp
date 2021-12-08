@@ -108,9 +108,9 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         };
-
-        seekBar.setMax(mediaPlayer.getDuration());
         mediaPlayer.start();
+        seekBar.setMax(mediaPlayer.getDuration());
+
         seekBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPink),
                 PorterDuff.Mode.MULTIPLY);
         seekBar.getThumb().setColorFilter(getResources().getColor(R.color.colorPink), PorterDuff.Mode.SRC_IN);
