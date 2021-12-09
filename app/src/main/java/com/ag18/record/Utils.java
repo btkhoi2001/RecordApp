@@ -3,9 +3,9 @@ package com.ag18.record;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class Time {
+public class Utils {
 
-    public String getTime(long duration) {
+    static public String getTime(long duration) {
         Date now = new Date();
 
         long seconds = TimeUnit.MILLISECONDS.toSeconds(now.getTime() - duration);
@@ -28,7 +28,25 @@ public class Time {
         } else {
             return days + " days ago";
         }
-
     }
 
+    static public String millisecondsToTimer(long milliSeconds) {
+        String timerString = "";
+        String secondsString;
+
+        int hours = (int)(milliSeconds / (1000 * 60 * 60));
+        int minutes = (int)(milliSeconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int)((milliSeconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        if (hours > 0)
+            timerString = hours + ":";
+
+        if (seconds < 10)
+            secondsString = "0" + seconds;
+        else
+            secondsString = "" + seconds;
+
+        timerString = timerString + minutes + ":" + secondsString;
+        return timerString;
+    }
 }

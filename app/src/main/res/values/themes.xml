@@ -33,4 +33,10 @@
         <item name="colorPrimary">#154c8b</item>
         <item name="android:colorForeground">#595f69</item>
     </style>
+
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/teal_200</item>
+        <item name="android:textColor">@color/teal_200</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
 </resources>

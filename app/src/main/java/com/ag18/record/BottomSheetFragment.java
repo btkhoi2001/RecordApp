@@ -1,11 +1,14 @@
 package com.ag18.record;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +24,7 @@ import androidx.navigation.Navigation;
 
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.InputType;
 import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
@@ -32,12 +36,19 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
     private ImageButton ibListen, ibShare, ibRename, ibEdit, ibDetails, ibDelete;
@@ -199,7 +210,46 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         ibDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
 
+                String duration = "";
+                String created = "";
+
+                try {
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setDataSource(file.getAbsolutePath());
+                    mediaPlayer.prepare();
+                    duration = Utils.millisecondsToTimer(mediaPlayer.getDuration());
+                    mediaPlayer.release();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    created = String.valueOf(Files.readAttributes(file.toPath(), BasicFileAttributes.class).creationTime());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String name = FilenameUtils.removeExtension(file.getName());
+                String format = FilenameUtils.getExtension(file.getName());
+                long bytes = file.length();
+                long kilobytes = (bytes / 1024);
+                long megabytes = (kilobytes / 1024);
+                String size = String.format("%,d MB", megabytes);
+                String fileLocation = file.getAbsolutePath();
+
+                alert.setMessage("Name: " + name + "\nFormat: " + format + "\nDuration: " + duration + "\nSize" + size + "\nFile location: " + fileLocation + "\nCreated: " + created);
+                alert.setTitle("View Details");
+
+                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                alert.show();
             }
         });
 
