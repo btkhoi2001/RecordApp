@@ -2,13 +2,16 @@ package com.ag18.record;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.text.InputType;
 import android.util.Log;
@@ -43,7 +46,7 @@ public class VoiceEditorFragment extends Fragment {
     private Handler handler = new Handler();
     private View view;
     private int totalDuration;
-    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+    private String externalStorage;
     private String suffix;
     private String prefix;
     private Boolean isPlaying = false, isDrag = false;
@@ -58,6 +61,9 @@ public class VoiceEditorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_voice_editor, container, false);
+
+        SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath() + "/RecordApp");
 
         ibPlayPause = view.findViewById(R.id.ib_play_editor);
         ibSave = view.findViewById(R.id.ib_save);

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
+import android.graphics.Color;
 import android.os.Environment;
 import android.text.Editable;
 import android.view.Gravity;
@@ -221,7 +222,7 @@ public class DirectoryChooserDialog
     private AlertDialog.Builder createDirectoryChooserDialog(String title, List<String> listItems,
                                                              DialogInterface.OnClickListener onClickListener)
     {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(m_context);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(m_context, R.style.AlertDialogStyle);
 
         // Create custom view for AlertDialog title containing
         // current directory TextView and possible 'New folder' button.
@@ -245,9 +246,10 @@ public class DirectoryChooserDialog
             public void onClick(View v)
             {
                 final EditText input = new EditText(m_context);
+                input.setTextColor(Color.BLACK);
 
                 // Show new folder name input dialog
-                new AlertDialog.Builder(m_context).
+                new AlertDialog.Builder(m_context, R.style.AlertDialogStyle).
                         setTitle("New folder name").
                         setView(input).setPositiveButton("OK", new DialogInterface.OnClickListener()
                 {

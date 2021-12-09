@@ -53,8 +53,6 @@ public class RecordFragment extends Fragment {
 
                 if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
                     navController.navigate(R.id.action_recordFragment_to_recordingFragment);
-//                    BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
-//                    bottomNavigationView.setVisibility(View.GONE);
                 }
             }
         });

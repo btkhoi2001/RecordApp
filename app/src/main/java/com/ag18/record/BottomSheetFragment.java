@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
@@ -21,7 +22,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.InputType;
@@ -57,7 +60,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     View rootView;
     String fileName;
     String newname ;
-    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+    private String externalStorage;
 
     public BottomSheetFragment(View rootView, String fileName) {
         this.rootView = rootView;
@@ -73,6 +76,9 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bottom_sheet, container, false);
+
+        SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath() + "/RecordApp");
 
         File file = new File(externalStorage + "/" + fileName);
 

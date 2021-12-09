@@ -62,7 +62,7 @@ public class RecordingFragment extends Fragment {
     private Thread recordingThread = null;
 
     private View view = null;
-    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+    private String externalStorage;
 
     int sampleRate = 44100;
     int channelConfiguration = 2;
@@ -88,11 +88,11 @@ public class RecordingFragment extends Fragment {
 
         loadSettings();
 
-/*        try {
+        try {
             org.apache.commons.io.FileUtils.cleanDirectory(new File(externalStorage + "/.temp"));
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
         
         btnStop = view.findViewById(R.id.btn_stop);
         btnPause = view.findViewById(R.id.btn_pause);
@@ -184,8 +184,6 @@ public class RecordingFragment extends Fragment {
     }
 
     private String getTempFilename() {
-        File tempFolder = new File(externalStorage + "/.temp");
-        tempFolder.mkdirs();
         File file = new File(externalStorage + "/.temp/recording_temp.raw");
 
         try {
@@ -229,6 +227,8 @@ public class RecordingFragment extends Fragment {
     {
         SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
         sampleRate = Integer.parseInt(sharedPreference.getString("sample_rate", "44100"));
-        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
+        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath() + "/RecordApp");
+        File tempFolder = new File(externalStorage + "/.temp");
+        tempFolder.mkdirs();
     }
 }

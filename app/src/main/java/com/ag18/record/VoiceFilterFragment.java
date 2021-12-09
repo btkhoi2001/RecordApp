@@ -1,10 +1,13 @@
 package com.ag18.record;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -37,7 +40,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class VoiceFilterFragment extends Fragment {
-    private ImageButton ibPlay, ibSave;
+    private ImageButton ibPlay, ibSave, ibStop;
     private AudioTrack audioTrack;
     private View view;
 
@@ -55,6 +58,8 @@ public class VoiceFilterFragment extends Fragment {
     private String externalStorage;
     File file;
 
+    PlayTask playTask;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +74,7 @@ public class VoiceFilterFragment extends Fragment {
 
         ibPlay = view.findViewById(R.id.ib_play_test);
         ibSave = view.findViewById(R.id.ib_save_file);
-
+        ibStop = view.findViewById(R.id.ib_stop_test);
         listView = view.findViewById(R.id.filter_list);
 
         filtersList = new ArrayList<>();
@@ -93,18 +98,31 @@ public class VoiceFilterFragment extends Fragment {
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    playRecord();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                playTask = new PlayTask();
+                playTask.execute();
+            }
+        });
+
+        ibStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ibPlay.setVisibility(View.VISIBLE);
+                ibStop.setVisibility(View.GONE);
+
+                if (audioTrack != null) {
+                    audioTrack.stop();
+                    audioTrack.flush();
+                    audioTrack.release();
                 }
+
+                playTask.cancel(true);
             }
         });
 
         ibSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
 
                 LinearLayout linearLayout = new LinearLayout(getActivity());
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -112,6 +130,7 @@ public class VoiceFilterFragment extends Fragment {
                 layoutParams.setMargins(50, 0, 50, 100);
 
                 EditText input = new EditText(getActivity());
+                input.setTextColor(Color.BLACK);
                 input.setGravity(Gravity.TOP | Gravity.START);
                 input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
@@ -180,7 +199,7 @@ public class VoiceFilterFragment extends Fragment {
         return data;
     }
 
-    private void playRecord() throws IOException {
+    private double playRecord() throws IOException {
         int shortSizeInBytes = Short.SIZE / Byte.SIZE;
         int bufferSizeInBytes = (int) (file.length() / shortSizeInBytes);
 
@@ -221,6 +240,8 @@ public class VoiceFilterFragment extends Fragment {
         audioTrack = new AudioTrack(3, (int) (sampleRate * pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
         audioTrack.play();
         audioTrack.write(audioData, 0, bufferSizeInBytes);
+
+        return audioData.length / (sampleRate * pitch);
     }
 
     private short[] echoFilter(short[] data, int numDelay, float decay)
@@ -277,7 +298,9 @@ public class VoiceFilterFragment extends Fragment {
         return bytes;
     }
 
-    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {        byte[] header = new byte[44];
+    private byte[] wavFileHeader(long totalAudioLen, long totalDataLen, int sampleRate, int channels, long byteRate, byte bitsPerSample) {
+        byte[] header = new byte[44];
+
         header[0] = 'R'; // RIFF/WAVE header
         header[1] = 'I';
         header[2] = 'F';
@@ -403,8 +426,42 @@ public class VoiceFilterFragment extends Fragment {
     private void loadSettings()
     {
         SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath() + "/RecordApp");
         sampleRate = Integer.parseInt(sharedPreference.getString("sample_rate", "44100"));
-        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
+    }
+
+    private class PlayTask extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected void onPreExecute()
+        {
+            ibPlay.setVisibility(View.GONE);
+            ibStop.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            double playTime = 0;
+
+            try {
+                playTime = playRecord();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                Thread.sleep((long) (playTime*1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v)
+        {
+            ibPlay.setVisibility(View.VISIBLE);
+            ibStop.setVisibility(View.GONE);
+        }
     }
 }
 

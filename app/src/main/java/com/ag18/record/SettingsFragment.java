@@ -89,7 +89,7 @@ public class SettingsFragment extends Fragment {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
                     View view = inflater.inflate(R.layout.dialog_about_us, null);
 
                     String name[] = {

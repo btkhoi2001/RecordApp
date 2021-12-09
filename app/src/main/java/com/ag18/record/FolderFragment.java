@@ -1,5 +1,6 @@
 package com.ag18.record;
 
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -8,9 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,9 +51,8 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
 
     private SeekBar seekbar;
     private Handler seekbarHandler = new Handler();
-//    boolean isShouldSetDataSource = true;
     BarVisualizer visualizer;
-    private String path = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
+    private String path;
 
     public FolderFragment() {
         // Required empty public constructor
@@ -79,6 +81,9 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        path = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath() + "/RecordApp");
 
         playerSheet = view.findViewById(R.id.player_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(playerSheet);
