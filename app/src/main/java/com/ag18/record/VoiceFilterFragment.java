@@ -2,6 +2,7 @@ package com.ag18.record;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 
 import android.os.Environment;
 import android.text.InputType;
@@ -23,7 +25,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -40,7 +41,7 @@ public class VoiceFilterFragment extends Fragment {
     private AudioTrack audioTrack;
     private View view;
 
-    int frequency = 44100;
+    int sampleRate = 44100;
     int channelConfiguration = 2;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
@@ -51,12 +52,15 @@ public class VoiceFilterFragment extends Fragment {
     float pitch = 1f;
     String selectedEffect = "None";
 
-    private String externalStorage = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
-    File file = new File(externalStorage + "/.temp/recording_temp.raw");
+    private String externalStorage;
+    File file;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        loadSettings();
+        file = new File(externalStorage + "/.temp/recording_temp.raw");
     }
 
     @Override
@@ -214,7 +218,7 @@ public class VoiceFilterFragment extends Fragment {
                 pitch = 1f;
         }
 
-        audioTrack = new AudioTrack(3, (int) (frequency*pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
+        audioTrack = new AudioTrack(3, (int) (sampleRate * pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
         audioTrack.play();
         audioTrack.write(audioData, 0, bufferSizeInBytes);
     }
@@ -361,7 +365,7 @@ public class VoiceFilterFragment extends Fragment {
         byte bitsPerSample = 16; //ENCODING-16-BITS
         int format = 1; //PCM
         int channels = channelConfiguration;
-        int sampleRate = (int) (frequency / 2 * pitch);
+        int sampleRate = (int) (this.sampleRate / 2 * pitch);
         long byteRate = (long) sampleRate * channels * bitsPerSample/8;
         int blockAlign = (int) (channels * bitsPerSample/8);
 
@@ -394,6 +398,13 @@ public class VoiceFilterFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadSettings()
+    {
+        SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sampleRate = Integer.parseInt(sharedPreference.getString("sample_rate", "44100"));
+        externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath());
     }
 }
 

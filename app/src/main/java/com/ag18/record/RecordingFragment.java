@@ -88,12 +88,12 @@ public class RecordingFragment extends Fragment {
 
         loadSettings();
 
-        try {
+/*        try {
             org.apache.commons.io.FileUtils.cleanDirectory(new File(externalStorage + "/.temp"));
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
+        }*/
+        
         btnStop = view.findViewById(R.id.btn_stop);
         btnPause = view.findViewById(R.id.btn_pause);
         btnCancel = view.findViewById(R.id.btn_cancel);
@@ -184,6 +184,8 @@ public class RecordingFragment extends Fragment {
     }
 
     private String getTempFilename() {
+        File tempFolder = new File(externalStorage + "/.temp");
+        tempFolder.mkdirs();
         File file = new File(externalStorage + "/.temp/recording_temp.raw");
 
         try {
@@ -191,7 +193,7 @@ public class RecordingFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        System.out.println(file.getAbsolutePath());
         return (file.getAbsolutePath());
     }
 

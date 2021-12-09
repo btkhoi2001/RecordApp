@@ -73,9 +73,11 @@ public class SettingsFragment extends Fragment {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             SharedPreferences.Editor editor = preferences.edit();
 
-            if(preference_recording_folder.getSummary() == "")
+            if(preference_recording_folder.getSummary() == null)
             {
-                path = String.valueOf(Environment.getExternalStorageDirectory());
+                path = String.valueOf(Environment.getExternalStorageDirectory() + "/RecordApp");
+                editor.putString("recording_folder", path);
+                editor.apply();
             } else
             {
                 path = preferences.getString("recording_folder", "");
