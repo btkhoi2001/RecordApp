@@ -20,17 +20,17 @@
         android:layout_row="0"
         android:layout_column="0">
         <ImageButton
-            android:id="@+id/ib_listen"
+            android:id="@+id/ib_ringtone"
             android:layout_width="65dp"
             android:layout_height="65dp"
             android:scaleType="fitXY"
             android:backgroundTint="#FF060F22"
-            android:src="@drawable/ic_baseline_play_arrow_24"/>
+            android:src="@drawable/ic_baseline_audiotrack_24"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:text="Listen"/>
+            android:text="Set Ringtone"/>
     </LinearLayout>
     <LinearLayout
         android:layout_marginTop="20dp"

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,7 +20,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Layout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +65,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
         File file = new File(externalStorage + "/" + fileName);
 
-        ibSetRingtone = view.findViewById(R.id.ib_listen);
+        ibSetRingtone = view.findViewById(R.id.ib_ringtone);
         ibShare = view.findViewById(R.id.ib_share);
         ibRename = view.findViewById(R.id.ib_rename);
         ibEdit = view.findViewById(R.id.ib_edit);
@@ -157,24 +160,75 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             }
         });
 
-        /*ibSetRingtone.setOnClickListener(new View.OnClickListener() {
+        ibSetRingtone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent to select Ringtone.
-                final Uri currentTone=
-                        RingtoneManager.getActualDefaultRingtoneUri(getActivity(),
-                                RingtoneManager.TYPE_ALARM);
-                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_RINGTONE);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Tone");
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentTone);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-                startActivityForResult(intent, 999);
+//                //Intent to select Ringtone.
+//                final Uri currentTone=
+//                        RingtoneManager.getActualDefaultRingtoneUri(getActivity(),
+//                                RingtoneManager.TYPE_ALARM);
+//                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_RINGTONE);
+//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Tone");
+//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentTone);
+//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+//                startActivityForResult(intent, 999);
+
+                if (!checkSystemWritePermission()) return;
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.MediaColumns.DATA, file.getAbsolutePath());
+                values.put(MediaStore.MediaColumns.TITLE, "ring");
+                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/wav");
+                values.put(MediaStore.MediaColumns.SIZE, file.length());
+                values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
+                values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
+                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
+                values.put(MediaStore.Audio.Media.IS_ALARM, true);
+                values.put(MediaStore.Audio.Media.IS_MUSIC, false);
+
+                Uri uri = MediaStore.Audio.Media.getContentUriForPath(file
+                        .getAbsolutePath());
+                getActivity().getContentResolver().delete(
+                        uri,
+                        MediaStore.MediaColumns.DATA + "=\""
+                                + file.getAbsolutePath() + "\"", null);
+                Uri newUri = getActivity().getContentResolver().insert(uri, values);
+
+                try {
+                    RingtoneManager.setActualDefaultRingtoneUri(
+                            getContext(), RingtoneManager.TYPE_RINGTONE,
+                            newUri);
+                } catch (Throwable t) {
+                    Log.e("Exception", t.getMessage());
+                }
+
+                dismiss();
             }
-        });*/
+        });
 
         return view;
     }
 
+    private boolean checkSystemWritePermission() {
+        boolean retVal = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            retVal = Settings.System.canWrite(getActivity());
+            Log.d("TAG", "Can Write Settings: " + retVal);
+            if(retVal){
+                ///Permission granted by the user
+            }else{
+                //permission not granted navigate to permission screen
+                openAndroidPermissionsMenu();
+            }
+        }
+        return retVal;
+    }
+
+    private void openAndroidPermissionsMenu() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+        intent.setData(Uri.parse("package:" + getActivity().getPackageName()));
+        startActivity(intent);
+    }
 }
