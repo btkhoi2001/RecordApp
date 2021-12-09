@@ -14,7 +14,8 @@
             app:useSimpleSummaryProvider="true" />
         <Preference
             android:key="recording_folder"
-            android:title="Recording Folder" />
+            android:title="Recording Folder"
+            />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="CREDIT"
