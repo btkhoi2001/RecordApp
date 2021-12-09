@@ -76,7 +76,6 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
             });
 
             itemView.setOnClickListener(this);
-
         }
 
         @Override
@@ -88,5 +87,4 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
     public interface onItemListClick {
         void onClickListener(File file, int position);
     }
-
 }

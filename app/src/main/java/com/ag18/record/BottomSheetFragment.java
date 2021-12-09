@@ -62,8 +62,6 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
         File file = new File(externalStorage + "/" + fileName);
 
-
-
         ibSetRingtone = view.findViewById(R.id.ib_listen);
         ibShare = view.findViewById(R.id.ib_share);
         ibRename = view.findViewById(R.id.ib_rename);
@@ -86,21 +84,13 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         ibDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (file.exists()){
+                if (file.exists()) {
                     file.delete();
-                    Toast.makeText(getActivity(), "File Deleted Successfully!", Toast.LENGTH_LONG).show();
                 }
-                else {
-                    Toast.makeText(getActivity(), "Can not Delete this file", Toast.LENGTH_LONG).show();
-                }
-                /*Fragment currentFragment = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment);
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.detach(currentFragment);
-                fragmentTransaction.attach(currentFragment);
-                fragmentTransaction.commit();*/
-                NavController navController = Navigation.findNavController(view);
-                navController.popBackStack();
-                navController.navigate(R.id.folderFragment);
+
+                NavController navController = Navigation.findNavController(rootView);
+                navController.navigate(R.id.action_folderFragment_self);
+                dismiss();
             }
         });
 

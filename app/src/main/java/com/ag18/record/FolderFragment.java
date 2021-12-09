@@ -83,7 +83,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         playBtn = view.findViewById(R.id.play_btn);
         playerHeader = view.findViewById(R.id.player_header_title);
         playerFilename = view.findViewById(R.id.player_filename);
-
         playerSeekbar = view.findViewById(R.id.player_seekbar);
 
         File directory = new File(path);
