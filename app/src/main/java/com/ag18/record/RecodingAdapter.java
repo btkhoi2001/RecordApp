@@ -12,10 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.File;
-import java.util.List;
 
 public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHolder> {
 

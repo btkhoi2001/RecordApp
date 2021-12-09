@@ -2,14 +2,9 @@ package com.ag18.record;
 
 import android.Manifest;
 import android.content.SharedPreferences;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 
@@ -20,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
-import androidx.preference.PreferenceManager;
+
 
 
 

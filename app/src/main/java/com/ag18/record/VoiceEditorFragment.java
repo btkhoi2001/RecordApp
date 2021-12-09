@@ -14,7 +14,6 @@ import androidx.preference.PreferenceManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;

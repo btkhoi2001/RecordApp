@@ -1,25 +1,17 @@
 package com.ag18.record;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
@@ -28,20 +20,14 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.InputType;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -50,16 +36,14 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
-    private ImageButton ibListen, ibShare, ibRename, ibEdit, ibDetails, ibDelete;
-    private ImageButton ibSetRingtone, ibFilters;
+    private ImageButton ibShare, ibRename, ibEdit, ibDetails, ibDelete;
+    private ImageButton ibSetRingtone;
     private File file;
     View rootView;
     String fileName;
-    String newname ;
     private String externalStorage;
 
     public BottomSheetFragment(View rootView, String fileName) {
@@ -80,7 +64,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
         externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath() + "/RecordApp");
 
-        File file = new File(externalStorage + "/" + fileName);
+        file = new File(externalStorage + "/" + fileName);
 
         ibSetRingtone = view.findViewById(R.id.ib_ringtone);
         ibShare = view.findViewById(R.id.ib_share);
@@ -271,9 +255,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             retVal = Settings.System.canWrite(getActivity());
             Log.d("TAG", "Can Write Settings: " + retVal);
             if(retVal){
-                ///Permission granted by the user
+                // Do nothing
             }else{
-                //permission not granted navigate to permission screen
                 openAndroidPermissionsMenu();
             }
         }

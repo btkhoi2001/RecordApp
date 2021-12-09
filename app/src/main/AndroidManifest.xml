@@ -25,15 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ListRecordingsActivity"
-            android:exported="true" />
-        <activity
-            android:name=".RecordingPlayList"
-            android:exported="true" />
-        <activity
-            android:name=".PlayerActivity"
-            android:exported="true" />
     </application>
 
 </manifest>
