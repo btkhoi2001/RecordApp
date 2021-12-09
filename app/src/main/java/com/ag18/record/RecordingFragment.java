@@ -193,7 +193,7 @@ public class RecordingFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(file.getAbsolutePath());
+
         return (file.getAbsolutePath());
     }
 
