@@ -14,14 +14,15 @@
             android:id="@+id/action_recordFragment_to_recordingFragment"
             app:destination="@id/recordingFragment" />
     </fragment>
-     <fragment
+    <fragment
         android:id="@+id/folderFragment"
         android:name="com.ag18.record.FolderFragment"
-        android:label="fragment_file" >
+        android:label="fragment_file"
+        tools:layout="@layout/fragment_folder">
         <action
             android:id="@+id/action_folderFragment_to_voiceEditorFragment"
             app:destination="@id/voiceEditorFragment" />
-     </fragment>
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.ag18.record.SettingsFragment"

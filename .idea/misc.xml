@@ -81,12 +81,14 @@
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/font/open_sans_semibold.xml" value="0.41770833333333335" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/activity_main.xml" value="0.25407608695652173" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/dialog_rename_file.xml" value="0.3596014492753623" />
+        <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/filter_line.xml" value="0.2504528985507246" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.25407608695652173" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/fragment_folder.xml" value="0.2563405797101449" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/fragment_record.xml" value="0.29528985507246375" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/fragment_recording.xml" value="0.21784420289855072" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/fragment_settings.xml" value="0.25407608695652173" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/fragment_voice_editor.xml" value="0.21784420289855072" />
+        <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/fragment_voice_filter.xml" value="0.2504528985507246" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/player_sheet.xml" value="0.36820652173913043" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/layout/recording_item_design.xml" value="0.37273550724637683" />
         <entry key="..\:/AndroidStudioProjects/Do an/RecordApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3875" />

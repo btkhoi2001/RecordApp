@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FolderFragment"
-    >
+    tools:context=".FolderFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,19 +15,19 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Recording List"
-            android:fontFamily="@font/open_sans_semibold"
-            android:textSize="25dp"
-            android:padding="@dimen/padding_10"
             android:background="#3D4054"
-            android:textColor="@color/white" />
+            android:fontFamily="@font/open_sans_semibold"
+            android:padding="@dimen/padding_10"
+            android:text="Recording List"
+            android:textColor="@color/white"
+            android:textSize="25dp" />
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/audio_list_view"
-            android:padding="@dimen/padding_10"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:padding="@dimen/padding_10" />
 
 
     </LinearLayout>

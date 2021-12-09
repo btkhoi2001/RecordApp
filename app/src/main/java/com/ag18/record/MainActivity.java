@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
                     bottomNavigationView.setVisibility(View.GONE);
             }
         });
+
+        createFolder();
     }
 
     private void verifyStoragePermissions(Activity activity) {

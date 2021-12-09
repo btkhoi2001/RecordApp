@@ -32,6 +32,7 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
         this.rootView = rootView;
         this.allFiles = allFiles;
         this.onItemListClick = onItemListClick;
+        notifyDataSetChanged();
     }
 
     @NonNull
