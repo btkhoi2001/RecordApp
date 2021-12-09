@@ -74,56 +74,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-
-<!--    <LinearLayout-->
-<!--        android:id="@+id/linearLayout3"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="40dp"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/player_filename"-->
-<!--        tools:layout_editor_absoluteX="0dp">-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/btnPrevious"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@drawable/ic_next_recording_previous"-->
-<!--            android:background="@android:color/transparent" />-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/btnForwadLeft"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:src="@drawable/ic_baseline_replay_24" />-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/play_btn"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:src="@drawable/ic_baseline_play_arrow_24" />-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/btnForwadRight"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:src="@drawable/ic_baseline_forward_24" />-->
-
-<!--        <ImageButton-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:src="@drawable/ic_baseline_more_horiz_24" />-->
-
-<!--    </LinearLayout>-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

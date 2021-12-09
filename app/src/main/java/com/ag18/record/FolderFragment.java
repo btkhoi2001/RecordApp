@@ -200,29 +200,23 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         fileToPlay = file;
         current = position;
         System.out.println(position);
-
         if(mediaPlayer != null ){
             if(mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
                 seekbarHandler.removeCallbacks(updateSeekbar);
             }
-
             mediaPlayer.release();
         }
-
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         playerFilename.setText(fileToPlay.getName());
-
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(fileToPlay.getAbsolutePath());
             mediaPlayer.prepare();
             btnPlay.setBackgroundResource(R.drawable.ic_play);
             seekbar.setProgress(0);
-
             playAudio();
             int audioSessionId = mediaPlayer.getAudioSessionId();
-
             if(audioSessionId != -1){
                 visualizer.setAudioSessionId(audioSessionId);
             }
