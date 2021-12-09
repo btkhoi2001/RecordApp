@@ -163,29 +163,17 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         ibSetRingtone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                //Intent to select Ringtone.
-//                final Uri currentTone=
-//                        RingtoneManager.getActualDefaultRingtoneUri(getActivity(),
-//                                RingtoneManager.TYPE_ALARM);
-//                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_RINGTONE);
-//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Tone");
-//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentTone);
-//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
-//                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-//                startActivityForResult(intent, 999);
-
                 if (!checkSystemWritePermission()) return;
 
                 ContentValues values = new ContentValues();
                 values.put(MediaStore.MediaColumns.DATA, file.getAbsolutePath());
-                values.put(MediaStore.MediaColumns.TITLE, "ring");
+                values.put(MediaStore.MediaColumns.TITLE, "My Ringtone");
                 values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/wav");
                 values.put(MediaStore.MediaColumns.SIZE, file.length());
                 values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
                 values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
-                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
-                values.put(MediaStore.Audio.Media.IS_ALARM, true);
+                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, false);
+                values.put(MediaStore.Audio.Media.IS_ALARM, false);
                 values.put(MediaStore.Audio.Media.IS_MUSIC, false);
 
                 Uri uri = MediaStore.Audio.Media.getContentUriForPath(file
@@ -205,6 +193,13 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                 }
 
                 dismiss();
+            }
+        });
+
+        ibDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -229,6 +224,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     private void openAndroidPermissionsMenu() {
         Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
         intent.setData(Uri.parse("package:" + getActivity().getPackageName()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
 }
