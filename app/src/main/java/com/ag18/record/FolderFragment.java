@@ -2,7 +2,6 @@ package com.ag18.record;
 
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,15 +11,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import android.os.Environment;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -29,14 +24,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import com.gauravk.audiovisualizer.visualizer.BarVisualizer;
 
 public class FolderFragment extends Fragment implements RecodingAdapter.onItemListClick {
-
     View view;
 
     private ConstraintLayout playerSheet;
@@ -57,9 +47,8 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     private TextView playerFilename;
 
     private SeekBar seekbar;
-    private Handler seekbarHandler;
-    private Runnable updateSeekbar;
-    boolean isShouldSetDataSource = true;
+    private Handler seekbarHandler = new Handler();
+//    boolean isShouldSetDataSource = true;
     BarVisualizer visualizer;
     private String path = System.getenv("EXTERNAL_STORAGE") + "/RecordApp";
 
@@ -68,10 +57,16 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     }
     @Override
     public void onDestroy() {
-        if (visualizer != null){
+        super.onDestroy();
+
+        if (visualizer != null) {
             visualizer.release();
         }
-        super.onDestroy();
+
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            seekbarHandler.removeCallbacks(updateSeekbar);
+        }
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -139,28 +134,19 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println(mediaPlayer);
+                if (fileToPlay == null)
+                    return;
+
                 if(mediaPlayer.isPlaying()){
                         pauseAudio();
                 }
-                else{
+                else {
                     playAudio();
                     int audioSessionId = mediaPlayer.getAudioSessionId();
+
                     if(audioSessionId != -1){
                         visualizer.setAudioSessionId(audioSessionId);
                     }
-                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            System.out.println("finish");
-                            btnPlay.setBackgroundResource(R.drawable.ic_play);
-                            seekbar.setProgress(0);
-                            mediaPlayer.stop();
-                            mediaPlayer.reset();
-                            seekbarHandler.removeCallbacks(updateSeekbar);
-                            isShouldSetDataSource = true;
-                        }
-                    });
                 }
             }
         });
@@ -172,6 +158,7 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
                 onClickListener(allFiles[next], next);
             }
         });
+
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -179,8 +166,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
                 onClickListener(allFiles[pre], pre);
             }
         });
-
-
 
         btnForwardRight.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,6 +177,7 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
                 }
             }
         });
+
         btnForwardLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -202,8 +188,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
                 }
             }
         });
-
-
     }
 
     @Override
@@ -211,48 +195,61 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         fileToPlay = file;
         current = position;
         System.out.println(position);
+
         if(mediaPlayer != null ){
-            if(mediaPlayer.isPlaying())
+            if(mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
+                seekbarHandler.removeCallbacks(updateSeekbar);
+            }
+
+            mediaPlayer.release();
         }
-        else{
-            mediaPlayer = new MediaPlayer();
-        }
-        if(mediaPlayer.isPlaying() || mediaPlayer.getCurrentPosition() > 0){
-            seekbarHandler.removeCallbacks(updateSeekbar);
-        }
+
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         playerFilename.setText(fileToPlay.getName());
+
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(fileToPlay.getAbsolutePath());
             mediaPlayer.prepare();
             btnPlay.setBackgroundResource(R.drawable.ic_play);
             seekbar.setProgress(0);
+
+            playAudio();
+            int audioSessionId = mediaPlayer.getAudioSessionId();
+
+            if(audioSessionId != -1){
+                visualizer.setAudioSessionId(audioSessionId);
+            }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     private void pauseAudio(){
+        playerHeader.setText("Pause");
         btnPlay.setBackgroundResource(R.drawable.ic_play);
         mediaPlayer.pause();
         seekbarHandler.removeCallbacks(updateSeekbar);
     }
+
     private void playAudio(){
-        if (isShouldSetDataSource){
-            isShouldSetDataSource = false;
-            try {
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(fileToPlay.getAbsolutePath());
-                mediaPlayer.prepare();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         btnPlay.setBackgroundResource(R.drawable.ic_pause_circle);
         mediaPlayer.start();
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                playerHeader.setText("Not Playing");
+                btnPlay.setBackgroundResource(R.drawable.ic_play);
+                seekbar.setProgress(0);
+//                mediaPlayer.stop();
+                mediaPlayer.seekTo(0);
+                seekbarHandler.removeCallbacks(updateSeekbar);
+            }
+        });
+
         seekbar.setMax(mediaPlayer.getDuration());
         seekbar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPink),
                 PorterDuff.Mode.MULTIPLY);
@@ -266,28 +263,30 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                seekbarHandler.removeCallbacks(updateSeekbar);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mediaPlayer.seekTo(seekBar.getProgress());
+                updateRunnable();
             }
         });
+
         playerFilename.setText(fileToPlay.getName());
         playerHeader.setText("Playing");
-        seekbarHandler = new Handler();
         updateRunnable();
-        seekbarHandler.postDelayed(updateSeekbar, 0);
+    }
 
-    }
     private void updateRunnable() {
-        updateSeekbar = new Runnable() {
-            @Override
-            public void run() {
-                seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                seekbarHandler.postDelayed(this, 500);
-            }
-        };
+        seekbarHandler.postDelayed(updateSeekbar, 10);
     }
+
+    private Runnable updateSeekbar = new Runnable() {
+        @Override
+        public void run() {
+            seekbar.setProgress(mediaPlayer.getCurrentPosition());
+            updateRunnable();
+        }
+    };
 }
