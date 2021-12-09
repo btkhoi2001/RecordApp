@@ -2,6 +2,7 @@ package com.ag18.record;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
@@ -101,8 +102,8 @@ public class VoiceEditorFragment extends Fragment {
             mediaPlayer.prepare();
             totalDuration = mediaPlayer.getDuration();
 
-            tvCurrentTime.setText(millisecondsToTimer(0));
-            tvTotalDuration.setText(millisecondsToTimer(totalDuration));
+            tvCurrentTime.setText(Utils.millisecondsToTimer(0));
+            tvTotalDuration.setText(Utils.millisecondsToTimer(totalDuration));
 
             sbPlayer.setMax(totalDuration);
             sbPlayer.setProgress(0);
@@ -113,8 +114,8 @@ public class VoiceEditorFragment extends Fragment {
 
             rsbEditor.setRange(0, totalDuration);
             rsbEditor.setProgress(0, totalDuration);
-            rsbEditor.getLeftSeekBar().setIndicatorText(millisecondsToTimer(0));
-            rsbEditor.getRightSeekBar().setIndicatorText(millisecondsToTimer(totalDuration));
+            rsbEditor.getLeftSeekBar().setIndicatorText(Utils.millisecondsToTimer(0));
+            rsbEditor.getRightSeekBar().setIndicatorText(Utils.millisecondsToTimer(totalDuration));
 
         } catch (Exception exception) {
             Toast.makeText(getActivity(), exception.getMessage(), Toast.LENGTH_SHORT).show();
@@ -142,11 +143,11 @@ public class VoiceEditorFragment extends Fragment {
         rsbEditor.setOnRangeChangedListener(new OnRangeChangedListener() {
             @Override
             public void onRangeChanged(RangeSeekBar view, float leftValue, float rightValue, boolean isFromUser) {
-                rsbEditor.getLeftSeekBar().setIndicatorText(millisecondsToTimer((int)leftValue));
-                rsbEditor.getRightSeekBar().setIndicatorText(millisecondsToTimer((int)rightValue));
+                rsbEditor.getLeftSeekBar().setIndicatorText(Utils.millisecondsToTimer((int)leftValue));
+                rsbEditor.getRightSeekBar().setIndicatorText(Utils.millisecondsToTimer((int)rightValue));
 
-                tvCurrentTime.setText(millisecondsToTimer((int)leftValue));
-                tvTotalDuration.setText(millisecondsToTimer((int)rightValue));
+                tvCurrentTime.setText(Utils.millisecondsToTimer((int)leftValue));
+                tvTotalDuration.setText(Utils.millisecondsToTimer((int)rightValue));
 
                 if (leftValue == rsbEditor.getMinProgress() && rightValue == rsbEditor.getMaxProgress()) {
                     ibTrim.setEnabled(false);
@@ -170,7 +171,7 @@ public class VoiceEditorFragment extends Fragment {
             public void onStopTrackingTouch(RangeSeekBar view, boolean isLeft) {
                 int leftValue = (int) rsbEditor.getLeftSeekBar().getProgress();
                 int rightValue = (int) rsbEditor.getRightSeekBar().getProgress();
-                tvCurrentTime.setText(millisecondsToTimer(leftValue));
+                tvCurrentTime.setText(Utils.millisecondsToTimer(leftValue));
                 totalDuration = rightValue - leftValue;
                 sbPlayer.setProgress(0);
                 sbPlayer.setMax(totalDuration);
@@ -198,7 +199,7 @@ public class VoiceEditorFragment extends Fragment {
                 if (b) {
                     int currentDuration = (int) rsbEditor.getLeftSeekBar().getProgress() + sbPlayer.getProgress();
                     mediaPlayer.seekTo(currentDuration, MediaPlayer.SEEK_CLOSEST);
-                    tvCurrentTime.setText(millisecondsToTimer(currentDuration));
+                    tvCurrentTime.setText(Utils.millisecondsToTimer(currentDuration));
                 }
             }
 
@@ -285,7 +286,7 @@ public class VoiceEditorFragment extends Fragment {
         ibSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
 
                 LinearLayout linearLayout = new LinearLayout(getActivity());
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -301,6 +302,7 @@ public class VoiceEditorFragment extends Fragment {
                     index++;
 
                 input.setText(prefix + "-" + index);
+                input.setTextColor(Color.BLACK);
                 linearLayout.addView(input, layoutParams);
 
                 alert.setMessage("Name");
@@ -351,7 +353,7 @@ public class VoiceEditorFragment extends Fragment {
                 isPlaying = false;
             }
             else if (!isDrag)
-                tvCurrentTime.setText(millisecondsToTimer(currentDuration));
+                tvCurrentTime.setText(Utils.millisecondsToTimer(currentDuration));
 
             if (isPlaying)
                 updateSeekBar();
@@ -382,23 +384,5 @@ public class VoiceEditorFragment extends Fragment {
         }
     }
 
-    private String millisecondsToTimer(long milliSeconds) {
-        String timerString = "";
-        String secondsString;
 
-        int hours = (int)(milliSeconds / (1000 * 60 * 60));
-        int minutes = (int)(milliSeconds % (1000 * 60 * 60)) / (1000 * 60);
-        int seconds = (int)((milliSeconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
-
-        if (hours > 0)
-            timerString = hours + ":";
-
-        if (seconds < 10)
-            secondsString = "0" + seconds;
-        else
-            secondsString = "" + seconds;
-
-        timerString = timerString + minutes + ":" + secondsString;
-        return timerString;
-    }
 }

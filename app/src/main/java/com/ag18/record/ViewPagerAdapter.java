@@ -17,7 +17,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new RecordFragment();
             case 1:
-                return new FolderFragment();
+                return new RecordFragment();
             case 2:
                 return new SettingsFragment();
             default:

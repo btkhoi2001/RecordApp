@@ -21,7 +21,6 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
 
     private View rootView;
     private File[] allFiles;
-    private Time time;
     private Context context;
     private onItemListClick onItemListClick;
 
@@ -32,20 +31,20 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
         this.rootView = rootView;
         this.allFiles = allFiles;
         this.onItemListClick = onItemListClick;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recording_item_design, parent, false);
-        time = new Time();
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.list_title.setText(allFiles[position].getName());
-        holder.list_date.setText(time.getTime(allFiles[position].lastModified()));
+        holder.list_date.setText(Utils.getTime(allFiles[position].lastModified()));
     }
 
     @Override
@@ -75,7 +74,6 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
             });
 
             itemView.setOnClickListener(this);
-
         }
 
         @Override
@@ -87,5 +85,4 @@ public class RecodingAdapter extends RecyclerView.Adapter<RecodingAdapter.ViewHo
     public interface onItemListClick {
         void onClickListener(File file, int position);
     }
-
 }
