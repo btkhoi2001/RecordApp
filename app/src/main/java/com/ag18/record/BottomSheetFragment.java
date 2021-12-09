@@ -111,49 +111,52 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         ibRename.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(getActivity());
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.dialog_rename_file);
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
 
-                Window window =dialog.getWindow();
-                if(window == null){
-                    return;
-                }
+                LinearLayout linearLayout = new LinearLayout(getActivity());
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams.setMargins(50, 0, 50, 100);
 
-                window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                EditText input = new EditText(getActivity());
+                input.setGravity(Gravity.TOP | Gravity.START);
+                input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
-                WindowManager.LayoutParams windowAttributes = window.getAttributes();
-                windowAttributes.gravity=Gravity.CENTER;
-                window.setAttributes(windowAttributes);
+                input.setTextColor(Color.BLACK);
+                linearLayout.addView(input, layoutParams);
 
-                if(Gravity.BOTTOM == Gravity.CENTER){
-                    dialog.setCancelable(true);
-                }else{
-                    dialog.setCancelable(true);
-                }
+                alert.setMessage("Name");
+                alert.setTitle("Rename");
+                alert.setView(linearLayout);
 
-                EditText nameText = dialog.findViewById(R.id.new_name);
-                Button btnOk = dialog.findViewById(R.id.ok_button);
-                TextView tvChangename = dialog.findViewById(R.id.change_name);
-
-                btnOk.setOnClickListener(new View.OnClickListener() {
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        newname = nameText.getText().toString();
-                        File rename = new File(externalStorage + "/" + newname);
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
 
-                        if (file.renameTo(rename)) {
-                            Toast.makeText(getActivity(), "File Successfully Rename", Toast.LENGTH_SHORT).show();
+                alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String filename = input.getText().toString();
+                        File newFile = new File(file.getParent(), filename + ".wav");
+
+                        try {
+                            Files.move(file.toPath(), newFile.toPath());
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        else {
-                            Toast.makeText(getActivity(), "Operation Failed", Toast.LENGTH_SHORT).show();
-                        }
+
+                        dialogInterface.dismiss();
+
+                        NavController navController = Navigation.findNavController(rootView);
+                        navController.navigate(R.id.action_folderFragment_self);
                         dismiss();
                     }
                 });
 
-                dialog.show();
+                alert.show();
             }
         });
 
