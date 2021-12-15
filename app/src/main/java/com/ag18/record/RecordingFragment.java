@@ -59,8 +59,8 @@ public class RecordingFragment extends Fragment {
     private View view = null;
     private String externalStorage;
 
-    int sampleRate = 44100;
-    int channelConfiguration = 2;
+    int sampleRate;
+    int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
     private long timeWhenStopped = 0;

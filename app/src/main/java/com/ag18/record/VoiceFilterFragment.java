@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -44,7 +45,7 @@ public class VoiceFilterFragment extends Fragment {
     private View view;
 
     int sampleRate = 44100;
-    int channelConfiguration = 2;
+    int channelConfiguration = AudioFormat.CHANNEL_OUT_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
     private ListView listView;
@@ -200,12 +201,9 @@ public class VoiceFilterFragment extends Fragment {
 
     private double playRecord() throws IOException {
         int shortSizeInBytes = Short.SIZE / Byte.SIZE;
-        int bufferSizeInBytes = (int) (file.length() / shortSizeInBytes);
+        int bufferSizeInShorts = (int) (file.length() / shortSizeInBytes);
 
         short[] audioData = readData();
-
-        //audioData = echoFilter(audioData, 2048, 0.6f);
-        //audioData = reverseFilter(audioData);
 
         switch (selectedEffect)
         {
@@ -236,11 +234,11 @@ public class VoiceFilterFragment extends Fragment {
                 pitch = 1f;
         }
 
-        audioTrack = new AudioTrack(3, (int) (sampleRate * pitch), channelConfiguration, audioEncoding, bufferSizeInBytes, 1);
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, (int) (sampleRate * pitch), channelConfiguration, audioEncoding, bufferSizeInShorts, AudioTrack.MODE_STREAM);
         audioTrack.play();
-        audioTrack.write(audioData, 0, bufferSizeInBytes);
+        audioTrack.write(audioData, 0, bufferSizeInShorts);
 
-        return audioData.length / (sampleRate * pitch);
+        return (double)audioData.length / (sampleRate * pitch);
     }
 
     private short[] echoFilter(short[] data, int numDelay, float decay)
@@ -250,7 +248,7 @@ public class VoiceFilterFragment extends Fragment {
 
         int length = data.length;
 
-        short[] modifiedData = new  short[length];
+        short[] modifiedData = new short[length];
 
         for (int i = 0; i < length; i ++)
         {
@@ -345,6 +343,7 @@ public class VoiceFilterFragment extends Fragment {
         header[41] = (byte) ((totalAudioLen >> 8) & 0xff);
         header[42] = (byte) ((totalAudioLen >> 16) & 0xff);
         header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
+
         return header;
     }
 

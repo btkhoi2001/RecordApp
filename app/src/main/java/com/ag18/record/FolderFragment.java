@@ -249,7 +249,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
                 playerHeader.setText("Not Playing");
                 btnPlay.setBackgroundResource(R.drawable.ic_play);
                 seekbar.setProgress(0);
-//                mediaPlayer.stop();
                 mediaPlayer.seekTo(0);
                 seekbarHandler.removeCallbacks(updateSeekbar);
             }
