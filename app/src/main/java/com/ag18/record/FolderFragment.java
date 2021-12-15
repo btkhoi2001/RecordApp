@@ -46,8 +46,7 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
     int current = 0;
     //UI Elements
     private Button btnPlay, btnForwardLeft, btnForwardRight, btnNext, btnPrevious;
-    private TextView playerHeader;
-    private TextView playerFilename;
+    private TextView playerHeader, playerFilename, txtStart, txtStop;
 
     private SeekBar seekbar;
     private Handler seekbarHandler = new Handler();
@@ -92,7 +91,8 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         btnPlay = view.findViewById(R.id.btnPlay);
         playerHeader = view.findViewById(R.id.player_header_title);
         playerFilename = view.findViewById(R.id.player_filename);
-
+        txtStart = view.findViewById(R.id.txtStart);
+        txtStop = view.findViewById(R.id.txtStop);
         seekbar = view.findViewById(R.id.player_seekbar);
         btnForwardLeft = view.findViewById(R.id.btnForwadLeft);
         btnForwardRight = view.findViewById(R.id.btnForwadRight);
@@ -148,7 +148,6 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
                 else {
                     playAudio();
                     int audioSessionId = mediaPlayer.getAudioSessionId();
-
                     if(audioSessionId != -1){
                         visualizer.setAudioSessionId(audioSessionId);
                     }
@@ -200,29 +199,24 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         fileToPlay = file;
         current = position;
         System.out.println(position);
-
         if(mediaPlayer != null ){
             if(mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
                 seekbarHandler.removeCallbacks(updateSeekbar);
             }
-
             mediaPlayer.release();
         }
-
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         playerFilename.setText(fileToPlay.getName());
-
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(fileToPlay.getAbsolutePath());
             mediaPlayer.prepare();
             btnPlay.setBackgroundResource(R.drawable.ic_play);
             seekbar.setProgress(0);
-
+            txtStop.setText(createTime((int)mediaPlayer.getDuration()));
             playAudio();
             int audioSessionId = mediaPlayer.getAudioSessionId();
-
             if(audioSessionId != -1){
                 visualizer.setAudioSessionId(audioSessionId);
             }
@@ -290,7 +284,19 @@ public class FolderFragment extends Fragment implements RecodingAdapter.onItemLi
         @Override
         public void run() {
             seekbar.setProgress(mediaPlayer.getCurrentPosition());
+            txtStart.setText(createTime((int)mediaPlayer.getCurrentPosition()));
             updateRunnable();
         }
     };
+    public String createTime(int duration){
+        String time = "";
+        int min = duration/1000/60;
+        int sec = duration/1000%60;
+        time += min + ":";
+        if(sec < 10){
+            time += "0";
+        }
+        time += sec;
+        return time;
+    }
 }

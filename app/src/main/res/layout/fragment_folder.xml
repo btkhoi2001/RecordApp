@@ -22,14 +22,11 @@
             android:textColor="@color/white"
             android:textSize="25dp" />
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/audio_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/padding_10" />
-
-
     </LinearLayout>
 
     <include layout="@layout/player_sheet" />
