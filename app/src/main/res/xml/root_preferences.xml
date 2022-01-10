@@ -16,6 +16,10 @@
             android:key="recording_folder"
             android:title="Recording Folder"
             />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="pause_during_a_call"
+            android:title="Pause during a call"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="CREDIT"

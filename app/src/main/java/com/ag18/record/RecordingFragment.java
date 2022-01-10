@@ -59,11 +59,14 @@ public class RecordingFragment extends Fragment {
     private View view = null;
     private String externalStorage;
 
-    int sampleRate;
-    int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
-    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+    private int sampleRate;
+    private int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
+    private int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+    private boolean pauseDuringACall;
+    private boolean isCalling = false;
 
     private long timeWhenStopped = 0;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -222,8 +225,29 @@ public class RecordingFragment extends Fragment {
     {
         SharedPreferences sharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
         sampleRate = Integer.parseInt(sharedPreference.getString("sample_rate", "44100"));
+        pauseDuringACall = sharedPreference.getBoolean("pause_during_a_call", false);
         externalStorage = sharedPreference.getString("recording_folder", Environment.getExternalStorageDirectory().getPath() + "/RecordApp");
         File tempFolder = new File(externalStorage + "/.temp");
         tempFolder.mkdirs();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (pauseDuringACall && isRecording) {
+            stopRecording(false);
+            isCalling = true;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (pauseDuringACall && isCalling) {
+            startRecording(true);
+            isCalling = false;
+        }
     }
 }
