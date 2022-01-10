@@ -1,11 +1,11 @@
 package com.ag18.record;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
-
-    static public String getTime(long duration) {
+    public static String getTime(long duration) {
         Date now = new Date();
 
         long seconds = TimeUnit.MILLISECONDS.toSeconds(now.getTime() - duration);
@@ -30,7 +30,7 @@ public class Utils {
         }
     }
 
-    static public String millisecondsToTimer(long milliSeconds) {
+    public static String millisecondsToTimer(long milliSeconds) {
         String timerString = "";
         String secondsString;
 
@@ -48,5 +48,12 @@ public class Utils {
 
         timerString = timerString + minutes + ":" + secondsString;
         return timerString;
+    }
+
+    public static String readableFileSize(long size) {
+        if(size <= 0) return "0";
+        final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }

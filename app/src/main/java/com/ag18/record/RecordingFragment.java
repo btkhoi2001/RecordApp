@@ -1,8 +1,11 @@
 package com.ag18.record;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -20,15 +23,22 @@ import androidx.preference.PreferenceManager;
 
 
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.StatFs;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -42,11 +52,14 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 
 public class RecordingFragment extends Fragment {
     private ImageButton btnStop, btnPause;
     private Button btnCancel;
+    private TextView tvRemainingStorage;
 
     private Chronometer chronometer;
     private NavController navController;
@@ -65,8 +78,8 @@ public class RecordingFragment extends Fragment {
     private boolean pauseDuringACall;
     private boolean isCalling = false;
 
+    private Handler storageHandler = new Handler();
     private long timeWhenStopped = 0;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,16 +104,18 @@ public class RecordingFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         btnStop = view.findViewById(R.id.btn_stop);
         btnPause = view.findViewById(R.id.btn_pause);
         btnCancel = view.findViewById(R.id.btn_cancel);
+        tvRemainingStorage = view.findViewById(R.id.tv_remaining_storage);
 
         chronometer = view.findViewById(R.id.chronometer);
         navController = Navigation.findNavController(view);
 
         setListener();
         startRecording(false);
+        updateStorage();
     }
 
     private void setListener() {
@@ -249,5 +264,55 @@ public class RecordingFragment extends Fragment {
             startRecording(true);
             isCalling = false;
         }
+    }
+
+    private Runnable updater = new Runnable() {
+        @Override
+        public void run() {
+            File iPath = Environment.getDataDirectory();
+            StatFs iStat = new StatFs(iPath.getPath());
+            long iBlockSize = iStat.getBlockSizeLong();
+            long iAvailableBlocks = iStat.getAvailableBlocksLong();
+            long iAvailableSpace = iAvailableBlocks * iBlockSize;
+
+            tvRemainingStorage.setText(Utils.readableFileSize(iAvailableSpace));
+            updateStorage();
+
+            if (iAvailableSpace <= 10 * 1024 * 1024)
+                ShowStorageFullDialog();
+        }
+    };
+
+    private void updateStorage() {
+        storageHandler.postDelayed(updater, 10);
+    }
+
+    private void ShowStorageFullDialog() {
+        storageHandler.removeCallbacks(updater);
+
+        if (isRecording)
+            stopRecording(false);
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
+
+        alert.setMessage("Do you want to save this record?");
+        alert.setTitle("Not Enough Storage");
+        alert.setCancelable(false);
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Navigation.findNavController(view).popBackStack();
+            }
+        });
+
+        alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                navController.navigate(R.id.action_recordingFragment_to_voiceFilterFragment);
+            }
+        });
+
+        alert.show();
     }
 }

@@ -26,9 +26,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class SettingsFragment extends Fragment {
-//
-//    private static final int MY_RESULT_CODE_FILECHOOSER = 2000;
-//    private static final String LOG_TAG = "AndroidExample";
+
 
     private static String path;
     public SettingsFragment() {
